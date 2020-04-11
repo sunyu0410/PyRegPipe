@@ -489,3 +489,7 @@ def deformWarp(cmtkPath, inImg, refImg, outImg, xform, scrPath, bashPath):
     cmd = '"%s" "%s"' % (bashPath, scrPath)
     runCmd(cmd)
     
+    state = True if os.path.exists(outImg) else False
+
+    return {outImg: state}
+    

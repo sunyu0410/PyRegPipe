@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 from os import path
 from pprint import pprint
 
@@ -595,8 +596,8 @@ def step2_5(self):
 
     params = (self.cmtk_path, self.cmtk_folder, *filesCopy)
     genCmtkScript(os.path.join(self.cmtk_folder, 'warp.sh'), params)
-    cmd = '%s %s' % (self.bash_path, os.path.join(self.cmtk_folder, 'warp.sh'))
-    # runCmd(cmd)
+    cmd = '"%s" "%s"' % (self.bash_path, os.path.join(self.cmtk_folder, 'warp.sh'))
+    runCmd(cmd)
 
     # Add the output to the filelist
     outFullpath = [os.path.join(self.cmtk_folder, i) for i in self.cmtkOutput]
@@ -605,7 +606,72 @@ def step2_5(self):
 
 
 def step2_6(self):
-    pass
+    '''Resample the data to ex_3d_cropped (rigidly) and 
+        ex_3d_cropped_deformable (deformably)
+    '''
+    key = 'step2_6'
+    files = {
+        'in_3d.nii': '(in_3d)_into_(ex_3d_cropped).nii',
+        'in_3d_contour.nii': '(in_3d_contour)_into_(ex_3d_cropped).nii',
+        'in_3d_log_masked.nii': '(in_3d_log_masked)_into_(ex_3d_cropped).nii'
+    }
+
+    otherFile = [
+        '(in_2d)_to_(in_3d).nii',
+        '(in_adc)_to_(in_3d).nii',
+        '(in_dce_auc)_to_(in_3d).nii',
+        '(in_dce_gd)_to_(in_3d).nii',
+        '(in_dce_iauc)_to_(in_3d).nii',
+        '(in_dce_ire)_to_(in_3d).nii',
+        '(in_dce_irw)_to_(in_3d).nii',
+        '(in_dce_kep)_to_(in_3d).nii',
+        '(in_dce_ktrans)_to_(in_3d).nii',
+        '(in_dce_me)_to_(in_3d).nii',
+        '(in_dce_tonset)_to_(in_3d).nii',
+        '(in_dce_ttp)_to_(in_3d).nii',
+        '(in_dce_twashout)_to_(in_3d).nii',
+        '(in_dce_ve)_to_(in_3d).nii'
+
+        # '(in_twist#)_to_(in_3d).nii',
+        # '(in_dwi_b50)_to_(in_3d).nii',
+        # '(in_bold_echo2)_to_(in_3d).nii'
+    ]
+
+    files.update({i:i.split('_to_')[0]+'_into_(ex_3d_cropped).nii' for i in otherFile})
+
+    if self.hasBold:
+        files.update({'(in_r2star)_to_(in_3d).nii': '(in_r2star)_into_(ex_3d_cropped).nii'})
+
+    output = {}
+
+    for eachF in files:
+        # Rigid resampling
+        output.update(
+            warpImg(inImg=os.path.join(self.nii_folder, eachF),
+                refImg=os.path.join(self.nii_folder, 'ex_3d_cropped.nii'),
+                outImg=os.path.join(self.nii_folder, files[eachF]),
+                pixelT='float',
+                tfmFile=os.path.join(self.tfm_folder, '(in_3d)_to_(ex_xd).tfm'),
+                intplMode='Linear',
+                labelMap=False))
+        
+
+        # Deformable resampling
+        # deformWarp(cmtkPath, inImg, refImg, outImg, xform, scrPath, bashPath)
+        output.update(
+            deformWarp(cmtkPath=self.cmtk_path,
+                   inImg=os.path.join(self.nii_folder, eachF),
+                   refImg=os.path.join(self.nii_folder, 'ex_3d_cropped.nii'),
+                   outImg=os.path.join(self.nii_folder, files[eachF].split('.')[0]+'_deformable.nii'),
+                   xform=os.path.join(self.cmtk_folder, 'warp_output_transform'),
+                   scrPath=os.path.join(self.script_folder, 
+                                f"warp_{eachF.split('.')[0]}_{int(time.time())}.sh"),
+                   bashPath=self.bash_path)
+        )
+        print(eachF)
+
+    
+    update(self, key, output)
 
 def step2_7(self):
     pass
