@@ -136,6 +136,18 @@ specs = dict(
                 btnFunc = regFunc.step2_5,
                 title = 'Deformable reg',
                 shortDesc= 'Run with CMTK'
+            ),
+
+            step2_6 = dict(
+                step = 'step2',
+                key = 'step2_6',
+                stepLabel = '''Tasks:
+                # 1. Resample the data rigidly to ex_3d_cropped
+                # 2. Resample the data deformably to ex_3d_cropped_deformable
+                ''',
+                btnFunc = regFunc.step2_6,
+                title = 'Resample data',
+                shortDesc= 'Resample data'
             )
         )
         
