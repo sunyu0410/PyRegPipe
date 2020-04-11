@@ -59,10 +59,10 @@ class PyRegPipeWidget:
         #                     'Choose the top level folder')
         
         # winMain
-        self.winMain, self.pLayout = self.createWin((100, 50, 500, 650), 
+        self.winMain, self.pLayout = self.createWin((100, 50, 500, 700), 
                                 'Python Assisted Registration Pipeline', 
                                 qt.QVBoxLayout(), maxW=500, minW=400,
-                                maxH=700, minH=600)
+                                maxH=750, minH=650)
         self.pInitiated = False
 
         # winFilePanel
