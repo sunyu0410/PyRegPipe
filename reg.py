@@ -468,3 +468,24 @@ def flipFile(inFile, outFile, mode):
     slicer.mrmlScene.RemoveNode(node)
     return state
 
+def deformWarp(cmtkPath, inImg, refImg, outImg, xform, scrPath, bashPath):
+    """Warp an image using the transform from CMTK.
+    
+    Arguments:
+        cmtkPath {str} -- path of the CMTK
+        inImg {str} -- path of the input image
+        refImg {str} -- path of the reference image
+        outImg {str} -- path of the output image
+        xform {str} -- path of the CMTK transform folder
+        scrPath {str} -- path of the folder to generate the script
+        bashPath {str} -- path of the bash shell
+    """
+    tmpl = 'export CMTK_WRITE_UNCOMPRESSED=1\n"{}"/reformatx -o "{}" --floating "{}" "{}" "{}"'
+
+    with open(scrPath, 'w') as f:
+        content = tmpl.format(cmtkPath, outImg, inImg, refImg, xform)
+        f.write(content)
+
+    cmd = '"%s" "%s"' % (bashPath, scrPath)
+    runCmd(cmd)
+    
