@@ -119,6 +119,10 @@ class PyRegPipeWidget:
         self.imagej_path = path.join(topFolder, r'Tools/ImageJ/ImageJ.exe')
         self.cmtk_path = path.join(topFolder, r'Tools/CMTK-2.3.0-Windows-x86/bin')
         self.bash_path = path.join(topFolder, r'Tools/cmder/vendor/git-for-windows/bin/bash.exe')
+
+        self.cmtkOutput = [
+            '(in_3d_log_masked)_into_(ex_3d_cropped)_deformable.nii',
+            '(in_3d)_into_(ex_3d_cropped)_deformable.nii']
     
     @staticmethod
     def createComboBox(items):

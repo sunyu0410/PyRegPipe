@@ -584,7 +584,6 @@ def step2_4(self):
 def step2_5(self):
     '''Step 2: 14'''
     key = 'step2_5'
-    output = {}
 
     filesCopy = ['ex_3d_cropped_log_masked.nii', 
              '(in_3d_log_masked)_into_(ex_3d_cropped)_linear.nii',
@@ -597,8 +596,11 @@ def step2_5(self):
     params = (self.cmtk_path, self.cmtk_folder, *filesCopy)
     genCmtkScript(os.path.join(self.cmtk_folder, 'warp.sh'), params)
     cmd = '%s %s' % (self.bash_path, os.path.join(self.cmtk_folder, 'warp.sh'))
-    runCmd(cmd)
+    # runCmd(cmd)
 
+    # Add the output to the filelist
+    outFullpath = [os.path.join(self.cmtk_folder, i) for i in self.cmtkOutput]
+    output = {i: os.path.exists(i) for i in outFullpath}
     update(self, key, output)
 
 
