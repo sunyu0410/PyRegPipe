@@ -53,34 +53,74 @@ class WarpImgWidget:
         self.buttons = {}
         self.textareas = {}
 
+        # Files to warp
+        self.filesWarp = ['in_dce_gd.nii', 'in_dce_auc.nii', 'in_dce_ire.nii', 
+            'in_dce_irw.nii', 'in_dce_me.nii', 'in_dce_tonset.nii', 'in_dce_twashout.nii', 
+            'in_dce_ttp.nii', 'in_ktrans_left_femoral.nii', 'in_ktrans_right_femoral.nii', 
+            'in_ktrans_weinmann.nii', 'in_ktrans_parker.nii', 'in_ve_left_femoral.nii', 
+            'in_ve_right_femoral.nii', 'in_ve_weinmann.nii', 'in_ve_parker.nii', 
+            'in_iaugc60.nii']
+
         # Project folder
         self.labels['lPrj'] = self.createLabel("Project folder", self.formFrame.layout())
-        self.labels['vPrj'] = self.createLabel("", self.formFrame.layout())
-        self.createBtn("Choose", lambda:self.selPath(self.labels['vPrj']), 
-                                                    self.formFrame.layout())
+        self.textareas['vPrj'] = self.createTextarea(self.formFrame.layout())
+        self.createBtn("Choose", self.selPrjFolder, self.formFrame.layout())
         
         # Output for into_(ex_3d_cropped) linear
         self.labels['lOutL'] = self.createLabel('Output folder (linear)',
                             self.formFrame.layout(), 'Output folder *_into_(ex_3d_cropped)')
-        self.labels['vOutL'] = self.createLabel("", self.formFrame.layout())
-        self.createBtn('Choose', lambda:self.selPath(self.labels['vOutL']),
+        self.textareas['vOutL'] = self.createTextarea(self.formFrame.layout())
+        self.createBtn('Change', lambda:self.selPath(self.textareas['vOutL']),
                                                      self.formFrame.layout())
 
         # Output for into_(ex_3d_cropped) deformable
         self.labels['lOutD'] = self.createLabel('Output folder (deformable)',
                     self.formFrame.layout(), 'Output folder *_into_(ex_3d_cropped)_deformable')
-        self.labels['vOutD'] = self.createLabel("", self.formFrame.layout())
-        self.createBtn('Choose', lambda:self.selPath(self.labels['vOutD']),
+        self.textareas['vOutD'] = self.createTextarea(self.formFrame.layout())
+        self.createBtn('Change', lambda:self.selPath(self.textareas['vOutD']),
                                                      self.formFrame.layout())
 
         # Defined list of files
-        self.labels['lDefF'] = self.createLabel('Files to use', self.formFrame.layout())
+        self.labels['lDefF'] = self.createLabel('Files to warp', self.formFrame.layout())
         self.textareas['vDefF'] = self.createTextarea(self.formFrame.layout())
+        self.textareas['vDefF'].setText('\n'.join(self.filesWarp))
         # textarea.toPlainText()
 
         # Found list of files
         self.labels['lFndF'] = self.createLabel('Files found', self.formFrame.layout())
         self.textareas['vFndF'] = self.createTextarea(self.formFrame.layout())
+
+        # Find files
+        self.buttons['fndF'] = self.createBtn('Find Files', self.findFile, 
+                                              self.formFrame.layout())
+        
+        # # - in_twist#.nii
+        # self.labels['lTwist'] = self.createLabel('in_twist#.nii', self.formFrame.layout())
+        # self.textareas['vTwist'] = self.createTextarea(self.formFrame.layout())
+
+        # # - (in_twist#)_to_(in_3d).tfm
+        # self.labels['lTwistToIn3d'] = self.createLabel('(in_twist#)_to_(in_3d).tfm', 
+        #                                                     self.formFrame.layout())
+        # self.textareas['vTwistToIn3d'] = self.createTextarea(self.formFrame.layout()) 
+
+        # # - (in_3d)_to_(ex_xd).tfm
+        # self.labels['lIn3dToEx'] = self.createLabel('(in_3d)_to_(ex_xd).tfm', 
+        #                                                     self.formFrame.layout())
+        # self.textareas['vIn3dToEx'] = self.createTextarea(self.formFrame.layout()) 
+
+        # # - in_3d.nii
+        # self.labels['lIn3d'] = self.createLabel('in_3d.nii', self.formFrame.layout())
+        # self.textareas['vIn3d'] = self.createTextarea(self.formFrame.layout()) 
+
+        # # - (ex_3d)_to_(ex_2d)_cropped.nii
+        # self.labels['lEx3dToEx2d'] = self.createLabel('(ex_3d)_to_(ex_2d)_cropped.nii', 
+        #                                                         self.formFrame.layout())
+        # self.textareas['vEx3dToEx2d'] = self.createTextarea(self.formFrame.layout()) 
+
+        # - the CMTK transformation folder
+        self.labels['lCmtk'] = self.createLabel('CMTK transformation folder', 
+                                                    self.formFrame.layout())
+        self.textareas['vCmtk'] = self.createTextarea(self.formFrame.layout()) 
 
         # Set Fonts
         self.font_code = qt.QFont("Consolas")
@@ -88,8 +128,10 @@ class WarpImgWidget:
         # self.font_title.setPointSize(10)
         self.font_title.setBold(True)
         [t.setFont(self.font_code) for t in self.textareas.values()]
-        [self.labels[key].setFont(self.font_code) for key in self.labels if \
-                                    key.startswith('v')]
+        [self.textareas[key].setReadOnly(True) for key in self.textareas if \
+                                key in ['vPrj', 'vOutL', 'vOutD']]
+        [self.textareas[key].setMaximumHeight(25) for key in self.textareas if \
+                                key not in ['vDefF', 'vFndF']]
         [self.labels[key].setFont(self.font_title) for key in self.labels if \
                                     key.startswith('l')]
 
@@ -97,10 +139,6 @@ class WarpImgWidget:
         # l.setStyleSheet('background: lightgray')
         [self.labels[key].setStyleSheet('background: lightgray') for key in \
                             self.labels if key.startswith('v')]
-
-        # Find files
-        self.buttons['fndF'] = self.createBtn('Find Files', self.findFile, 
-                                              self.formFrame.layout())
 
         # Warp images
         self.buttons['warp'] = self.createBtn('Warp', self.warpImg, 
@@ -111,6 +149,16 @@ class WarpImgWidget:
                                               self.formFrame.layout())
         print('Setup done')
         
+    def selPrjFolder(self):
+        prjFolder = self.selPath(self.textareas['vPrj'])
+        if not prjFolder:
+            return
+        outputLiner = os.path.join(prjFolder, 'warp_linear')
+        outputDeform = os.path.join(prjFolder, 'warp_deformable')
+        self.textareas['vOutL'].setText(outputLiner)
+        self.textareas['vOutD'].setText(outputDeform)
+
+
     def findFile(self):
         print('findFile')
         pass
@@ -120,8 +168,7 @@ class WarpImgWidget:
         pass
 
     def clear(self):
-        print('clear')
-        pass
+        [t.clear() for t in self.textareas.values()]
 
     def createClp(self, text, parentLayout, boxLayout):
         '''Create a collapsible button'''
@@ -162,9 +209,10 @@ class WarpImgWidget:
         path = self.getPath()
         if path:
             labelObj.setText(path)
+        return path
 
     def getPath(self):
         '''Choose the project folder'''
         dialog = ctk.ctkFileDialog()
         selected = dialog.getExistingDirectory()
-        return selected if selected else None
+        return os.path.realpath(selected) if selected else None
