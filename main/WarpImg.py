@@ -4,8 +4,9 @@ import threading
 import time
 import pickle
 import pathlib
+from glob import glob
 from os import path
-from pprint import pprint
+from pprint import pprint, pformat
 
 # Add the code folder to the path
 topFolder = os.path.abspath(os.path.join(sys.executable, *([os.pardir]*4)))
@@ -53,6 +54,14 @@ class WarpImgWidget:
         self.buttons = {}
         self.textareas = {}
 
+        # Paths
+        self.topFolder = os.path.abspath(os.path.join(sys.executable, *([os.pardir]*4)))
+        self.cmtkPath = os.path.realpath(os.path.join(self.topFolder, 
+                                            r'Tools/CMTK-2.3.0-Windows-x86/bin'))
+        self.bashPath = os.path.realpath(os.path.join(self.topFolder, 
+                                     r'Tools/cmder/vendor/git-for-windows/bin/bash.exe'))
+
+
         # Files to warp
         self.filesWarp = ['in_dce_gd.nii', 'in_dce_auc.nii', 'in_dce_ire.nii', 
             'in_dce_irw.nii', 'in_dce_me.nii', 'in_dce_tonset.nii', 'in_dce_twashout.nii', 
@@ -61,31 +70,20 @@ class WarpImgWidget:
             'in_ve_right_femoral.nii', 'in_ve_weinmann.nii', 'in_ve_parker.nii', 
             'in_iaugc60.nii']
 
+        self.filesAssc = ['in_twist*.nii', '(in_twist*)_to_(in_3d).tfm', 
+                            '(in_3d)_to_(ex_xd).tfm', 'in_3d.nii', 
+                            '(ex_3d)_to_(ex_2d)_cropped.nii']
+
         # Project folder
-        self.labels['lPrj'] = self.createLabel("Project folder", self.formFrame.layout())
+        self.labels['lPrj'] = self.createLabel("DYNAMIKA folder(s)", 
+                    self.formFrame.layout(), 'The folder for DYNAMKA maps')
         self.textareas['vPrj'] = self.createTextarea(self.formFrame.layout())
-        self.createBtn("Choose", self.selPrjFolder, self.formFrame.layout())
         
-        # Output for into_(ex_3d_cropped) linear
-        self.labels['lOutL'] = self.createLabel('Output folder (linear)',
-                            self.formFrame.layout(), 'Output folder *_into_(ex_3d_cropped)')
-        self.textareas['vOutL'] = self.createTextarea(self.formFrame.layout())
-        self.createBtn('Change', lambda:self.selPath(self.textareas['vOutL']),
-                                                     self.formFrame.layout())
-
-        # Output for into_(ex_3d_cropped) deformable
-        self.labels['lOutD'] = self.createLabel('Output folder (deformable)',
-                    self.formFrame.layout(), 'Output folder *_into_(ex_3d_cropped)_deformable')
-        self.textareas['vOutD'] = self.createTextarea(self.formFrame.layout())
-        self.createBtn('Change', lambda:self.selPath(self.textareas['vOutD']),
-                                                     self.formFrame.layout())
-
-        # Defined list of files
-        self.labels['lDefF'] = self.createLabel('Files to warp', self.formFrame.layout())
-        self.textareas['vDefF'] = self.createTextarea(self.formFrame.layout())
-        self.textareas['vDefF'].setText('\n'.join(self.filesWarp))
-        # textarea.toPlainText()
-
+        # Associated folder
+        self.labels['lAsc'] = self.createLabel("Associated folder(s)", 
+                        self.formFrame.layout(), 'The folder for other files')
+        self.textareas['vAsc'] = self.createTextarea(self.formFrame.layout())
+        
         # Found list of files
         self.labels['lFndF'] = self.createLabel('Files found', self.formFrame.layout())
         self.textareas['vFndF'] = self.createTextarea(self.formFrame.layout())
@@ -94,33 +92,16 @@ class WarpImgWidget:
         self.buttons['fndF'] = self.createBtn('Find Files', self.findFile, 
                                               self.formFrame.layout())
         
-        # # - in_twist#.nii
-        # self.labels['lTwist'] = self.createLabel('in_twist#.nii', self.formFrame.layout())
-        # self.textareas['vTwist'] = self.createTextarea(self.formFrame.layout())
-
-        # # - (in_twist#)_to_(in_3d).tfm
-        # self.labels['lTwistToIn3d'] = self.createLabel('(in_twist#)_to_(in_3d).tfm', 
-        #                                                     self.formFrame.layout())
-        # self.textareas['vTwistToIn3d'] = self.createTextarea(self.formFrame.layout()) 
-
-        # # - (in_3d)_to_(ex_xd).tfm
-        # self.labels['lIn3dToEx'] = self.createLabel('(in_3d)_to_(ex_xd).tfm', 
-        #                                                     self.formFrame.layout())
-        # self.textareas['vIn3dToEx'] = self.createTextarea(self.formFrame.layout()) 
-
-        # # - in_3d.nii
-        # self.labels['lIn3d'] = self.createLabel('in_3d.nii', self.formFrame.layout())
-        # self.textareas['vIn3d'] = self.createTextarea(self.formFrame.layout()) 
-
-        # # - (ex_3d)_to_(ex_2d)_cropped.nii
-        # self.labels['lEx3dToEx2d'] = self.createLabel('(ex_3d)_to_(ex_2d)_cropped.nii', 
-        #                                                         self.formFrame.layout())
-        # self.textareas['vEx3dToEx2d'] = self.createTextarea(self.formFrame.layout()) 
-
         # - the CMTK transformation folder
         self.labels['lCmtk'] = self.createLabel('CMTK transformation folder', 
                                                     self.formFrame.layout())
-        self.textareas['vCmtk'] = self.createTextarea(self.formFrame.layout()) 
+        self.textareas['vCmtk'] = self.createTextarea(self.formFrame.layout())
+        # self.createBtn('Choose', lambda:self.selPath(self.textareas['vCmtk']),
+        #                                              self.formFrame.layout())
+        
+        # Output folder
+        self.labels['lOut'] = self.createLabel('Output folder', self.formFrame.layout())
+        self.textareas['vOut'] = self.createTextarea(self.formFrame.layout())
 
         # Set Fonts
         self.font_code = qt.QFont("Consolas")
@@ -128,10 +109,8 @@ class WarpImgWidget:
         # self.font_title.setPointSize(10)
         self.font_title.setBold(True)
         [t.setFont(self.font_code) for t in self.textareas.values()]
-        [self.textareas[key].setReadOnly(True) for key in self.textareas if \
-                                key in ['vPrj', 'vOutL', 'vOutD']]
         [self.textareas[key].setMaximumHeight(25) for key in self.textareas if \
-                                key not in ['vDefF', 'vFndF']]
+                                key not in ['vFndF']]
         [self.labels[key].setFont(self.font_title) for key in self.labels if \
                                     key.startswith('l')]
 
@@ -148,24 +127,88 @@ class WarpImgWidget:
         self.buttons['clear'] = self.createBtn('Clear', self.clear, 
                                               self.formFrame.layout())
         print('Setup done')
-        
-    def selPrjFolder(self):
-        prjFolder = self.selPath(self.textareas['vPrj'])
-        if not prjFolder:
-            return
-        outputLiner = os.path.join(prjFolder, 'warp_linear')
-        outputDeform = os.path.join(prjFolder, 'warp_deformable')
-        self.textareas['vOutL'].setText(outputLiner)
-        self.textareas['vOutD'].setText(outputDeform)
-
 
     def findFile(self):
-        print('findFile')
-        pass
+        fl1 = {i:None for i in self.filesWarp}
+        prjFolder = self.textareas['vPrj'].toPlainText().strip().split()
+        for eachF in self.filesWarp:
+            for f in prjFolder:
+                match = glob(os.path.join(f + '**', eachF))
+                if match:
+                    fl1[eachF] = match[0]
+                    break
+
+        fl2 = {i:None for i in self.filesAssc}
+        ascFolder = self.textareas['vAsc'].toPlainText().strip().split()
+        for eachF in self.filesAssc:
+            for f in ascFolder:
+                match = glob(os.path.join(f + '**', eachF))
+                if match:
+                    fl2[eachF] = match[0]
+                    break
+        fl = dict(warp=fl1, assc=fl2)
+        self.textareas['vFndF'].setText(pformat(fl, width=60))
 
     def warpImg(self):
-        print('warpImg')
-        pass
+        # assert no missing asscociated files
+        # assert all file length is 1
+        # check all files exist
+        
+        print(os.getcwd())
+        # D:\Work\PyRegPipe\Tools\Slicer 4.11.0-2019-11-25
+
+        # File list
+        fl = eval(self.textareas['vFndF'].toPlainText())
+        flWarp = fl['warp']
+        flAssc = fl['assc']
+
+        # Output folder
+        outDir = self.textareas['vOut'].toPlainText().strip()
+        outDirS = os.path.join(outDir, 'script')
+        outDirL = os.path.join(outDir, 'linear')
+        outDirD = os.path.join(outDir, 'deformable')
+
+        if os.path.exists(outDir):
+            print('Warning: output folder already exists.')
+        os.makedirs(outDir, exist_ok=True)
+        os.makedirs(outDirL, exist_ok=True)
+        os.makedirs(outDirD, exist_ok=True)
+        os.makedirs(outDirS, exist_ok=True)
+
+        # CMTK transformation folder
+        cmtkTfmDir = self.textareas['vCmtk'].toPlainText().strip()
+
+        assert all(flAssc.values())
+        assert [os.path.exists(i) for i in flAssc.values()]
+        assert [os.path.exists(i) for i in flWarp.values() if i is not None]
+        assert os.path.exists(cmtkTfmDir)
+
+        for eachF in flWarp:
+            # Rigid resampling
+            inImgL = flWarp[eachF]
+            if not inImgL:
+                print(f'Skipping {eachF}')
+                continue
+            refImgL = flAssc['(ex_3d)_to_(ex_2d)_cropped.nii']
+            outFnameL = eachF.split('_to_')[0] + '_into_(ex_3d_cropped).nii'
+            outImgL = os.path.join(outDirL, outFnameL)
+            tfmFileL = flAssc['(in_3d)_to_(ex_xd).tfm']
+            print(f'Warp linear: {eachF}')
+            warpImg(inImg=inImgL,  refImg=refImgL, outImg=outImgL, pixelT='float',
+                    tfmFile=tfmFileL, intplMode='Linear', labelMap=False)
+
+            # Deformable resampling
+            # deformWarp(cmtkPath, inImg, refImg, outImg, xform, scrPath, bashPath)
+            inImgD = outImgL
+            refImgD = refImgL
+            outFnameD = eachF.split('_to_')[0] + '_into_(ex_3d_cropped)_deformable.nii'
+            outImgD = os.path.join(outDirD, outFnameD)
+            xform = cmtkTfmDir
+            srcPath = os.path.join(outDirS, f"warp_{eachF.split('.')[0]}.sh")
+            print(f'Warp deform: {eachF}')
+            deformWarp(cmtkPath=self.cmtkPath, inImg=inImgD, refImg=refImgD, outImg=outImgD,
+                       xform=xform, scrPath=srcPath, bashPath=self.bashPath)
+            
 
     def clear(self):
         [t.clear() for t in self.textareas.values()]
