@@ -109,7 +109,7 @@ class WarpImgWidget:
         # self.font_title.setPointSize(10)
         self.font_title.setBold(True)
         [t.setFont(self.font_code) for t in self.textareas.values()]
-        [self.textareas[key].setMaximumHeight(25) for key in self.textareas if \
+        [self.textareas[key].setMaximumHeight(50) for key in self.textareas if \
                                 key not in ['vFndF']]
         [self.labels[key].setFont(self.font_title) for key in self.labels if \
                                     key.startswith('l')]
@@ -185,7 +185,7 @@ class WarpImgWidget:
                 print(f'Skipping {eachF}')
                 continue
             refImgL = flAssc['(ex_3d)_to_(ex_2d)_cropped.nii']
-            outFnameL = eachF.split('_to_')[0] + '_into_(ex_3d_cropped).nii'
+            outFnameL = f"({eachF.split('.nii')[0]})_into_(ex_3d_cropped).nii"
             outImgL = os.path.join(outDirL, outFnameL)
             tfmFileL = flAssc['(in_3d)_to_(ex_xd).tfm']
             print(f'Warp linear: {eachF}')
@@ -196,7 +196,7 @@ class WarpImgWidget:
             # deformWarp(cmtkPath, inImg, refImg, outImg, xform, scrPath, bashPath)
             inImgD = outImgL
             refImgD = refImgL
-            outFnameD = eachF.split('_to_')[0] + '_into_(ex_3d_cropped)_deformable.nii'
+            outFnameD = f"({eachF.split('.nii')[0]})_into_(ex_3d_cropped)_deformable.nii"
             outImgD = os.path.join(outDirD, outFnameD)
             xform = cmtkTfmDir
             srcPath = os.path.join(outDirS, f"warp_{eachF.split('.')[0]}.sh")
