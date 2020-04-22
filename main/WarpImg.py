@@ -150,13 +150,6 @@ class WarpImgWidget:
         self.textareas['vFndF'].setText(pformat(fl, width=60))
 
     def warpImg(self):
-        # assert no missing asscociated files
-        # assert all file length is 1
-        # check all files exist
-        
-        print(os.getcwd())
-        # D:\Work\PyRegPipe\Tools\Slicer 4.11.0-2019-11-25
-
         # File list
         fl = eval(self.textareas['vFndF'].toPlainText())
         flWarp = fl['warp']
@@ -178,7 +171,9 @@ class WarpImgWidget:
         # CMTK transformation folder
         cmtkTfmDir = self.textareas['vCmtk'].toPlainText().strip()
 
+        # assert no missing asscociated files
         assert all(flAssc.values())
+        # check all files exist
         assert [os.path.exists(i) for i in flAssc.values()]
         assert [os.path.exists(i) for i in flWarp.values() if i is not None]
         assert os.path.exists(cmtkTfmDir)
