@@ -20,7 +20,7 @@ from __main__ import vtk, qt, ctk, slicer
 
 class ToNIfTI:
     def __init__(self, parent):
-        parent.title = 'Convert to NIfTI'
+        parent.title = 'Dynamika: convert DICOM to NIfTI'
         parent.categories = ['BiRT']
         parent.dependencies = []
         parent.contributors = ['Yu Sun']
