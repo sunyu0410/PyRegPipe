@@ -20,7 +20,7 @@ from __main__ import vtk, qt, ctk, slicer
 
 class WarpImg:
     def __init__(self, parent):
-        parent.title = 'Warp Images'
+        parent.title = 'Dynamika: co-register with ex vivo MRI'
         parent.categories = ['BiRT']
         parent.dependencies = []
         parent.contributors = ['Yu Sun']
@@ -70,7 +70,7 @@ class WarpImgWidget:
             'in_ve_right_femoral.nii', 'in_ve_weinmann.nii', 'in_ve_parker.nii', 
             'in_iaugc60.nii']
 
-        self.filesAssc = ['in_twist*.nii', '(in_twist*)_to_(in_3d).tfm', 
+        self.filesAssc = ['(in_twist*)_to_(in_3d).tfm', 
                             '(in_3d)_to_(ex_xd).tfm', 'in_3d.nii', 
                             '(ex_3d)_to_(ex_2d)_cropped.nii']
 
@@ -159,14 +159,13 @@ class WarpImgWidget:
         outDir = self.textareas['vOut'].toPlainText().strip()
         outDirS = os.path.join(outDir, 'script')
         outDirL = os.path.join(outDir, 'linear')
+        outDirT = os.path.join(outDir, 'temp')
         outDirD = os.path.join(outDir, 'deformable')
 
         if os.path.exists(outDir):
             print('Warning: output folder already exists.')
-        os.makedirs(outDir, exist_ok=True)
-        os.makedirs(outDirL, exist_ok=True)
-        os.makedirs(outDirD, exist_ok=True)
-        os.makedirs(outDirS, exist_ok=True)
+        [os.makedirs(i, exist_ok=True) for i \
+            in (outDir, outDirL, outDirD, outDirT, outDirS)]
 
         # CMTK transformation folder
         cmtkTfmDir = self.textareas['vCmtk'].toPlainText().strip()
@@ -180,10 +179,20 @@ class WarpImgWidget:
 
         for eachF in flWarp:
             # Rigid resampling
-            inImgL = flWarp[eachF]
-            if not inImgL:
+            # into_(in_3d)
+            inImgT = flWarp[eachF]
+            if not inImgT:
                 print(f'Skipping {eachF}')
                 continue
+            refImgT = flAssc['in_3d.nii']
+            outFnameT = f"({eachF.split('.nii')[0]})_into_(in_3d).nii"
+            outImgT = os.path.join(outDirT, outFnameT)
+            tfmFileT = flAssc['(in_twist*)_to_(in_3d).tfm']
+            warpImg(inImg=inImgT,  refImg=refImgT, outImg=outImgT, pixelT='float',
+                    tfmFile=tfmFileT, intplMode='Linear', labelMap=False)
+
+            # into_(ex_3d_cropped)
+            inImgL = outImgT
             refImgL = flAssc['(ex_3d)_to_(ex_2d)_cropped.nii']
             outFnameL = f"({eachF.split('.nii')[0]})_into_(ex_3d_cropped).nii"
             outImgL = os.path.join(outDirL, outFnameL)
