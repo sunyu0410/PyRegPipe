@@ -174,4 +174,3 @@ class ToNIfTIWidget:
         textarea = qt.QTextEdit()
         parentLayout.addWidget(textarea)
         return textarea
-
