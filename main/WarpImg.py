@@ -174,8 +174,8 @@ class WarpImgWidget:
         # assert no missing asscociated files
         assert all(flAssc.values())
         # check all files exist
-        assert [os.path.exists(i) for i in flAssc.values()]
-        assert [os.path.exists(i) for i in flWarp.values() if i is not None]
+        assert all([os.path.exists(i) for i in flAssc.values()])
+        assert all([os.path.exists(i) for i in flWarp.values() if i is not None])
         assert os.path.exists(cmtkTfmDir)
 
         for eachF in flWarp:
