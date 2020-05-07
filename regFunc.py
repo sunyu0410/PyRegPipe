@@ -619,54 +619,62 @@ def step2_6(self):
     otherFile = [
         '(in_2d)_to_(in_3d).nii',
         '(in_adc)_to_(in_3d).nii',
-        '(in_dce_auc)_to_(in_3d).nii',
-        '(in_dce_gd)_to_(in_3d).nii',
-        '(in_dce_iauc)_to_(in_3d).nii',
-        '(in_dce_ire)_to_(in_3d).nii',
-        '(in_dce_irw)_to_(in_3d).nii',
-        '(in_dce_kep)_to_(in_3d).nii',
-        '(in_dce_ktrans)_to_(in_3d).nii',
-        '(in_dce_me)_to_(in_3d).nii',
-        '(in_dce_tonset)_to_(in_3d).nii',
-        '(in_dce_ttp)_to_(in_3d).nii',
-        '(in_dce_twashout)_to_(in_3d).nii',
-        '(in_dce_ve)_to_(in_3d).nii'
-
         # '(in_twist#)_to_(in_3d).nii',
-        # '(in_dwi_b50)_to_(in_3d).nii',
-        # '(in_bold_echo2)_to_(in_3d).nii'
+        '(in_dwi_b50)_to_(in_3d).nii',
+        '(in_bold_echo2)_to_(in_3d).nii'
     ]
 
-    files.update({i:i.split('_to_')[0]+'_into_(ex_3d_cropped).nii' for i in otherFile})
+    # Define the possible PK maps
+    pkMaps = [f'{(os.path.splitext(i)[0])}_to_(in_3d).nii' for i in self.pkMaps]
 
+    # Add them to otherFile
+    otherFile += pkMaps
+
+    # Update the output file names
+    files.update({i:i.split('_to_')[0]+'_into_(ex_3d_cropped).nii' for i in otherFile})
     if self.hasBold:
         files.update({'(in_r2star)_to_(in_3d).nii': '(in_r2star)_into_(ex_3d_cropped).nii'})
 
     output = {}
 
     for eachF in files:
+        inImgL = os.path.join(self.nii_folder, eachF)
+
+        # Skip not existed files (possible for PK maps)
+        if not os.path.exists(inImgL):
+            continue
+
+        refImgL = os.path.join(self.nii_folder, 'ex_3d_cropped.nii')
+        outImgL = os.path.join(self.nii_folder, files[eachF])
+        tfmFileL = os.path.join(self.tfm_folder, '(in_3d)_to_(ex_xd).tfm')
         # Rigid resampling
         output.update(
-            warpImg(inImg=os.path.join(self.nii_folder, eachF),
-                refImg=os.path.join(self.nii_folder, 'ex_3d_cropped.nii'),
-                outImg=os.path.join(self.nii_folder, files[eachF]),
-                pixelT='float',
-                tfmFile=os.path.join(self.tfm_folder, '(in_3d)_to_(ex_xd).tfm'),
-                intplMode='Linear',
-                labelMap=False))
+            warpImg(inImg=refImgL,
+                    refImg=refImgL,
+                    outImg=outImgL,
+                    pixelT='float',
+                    tfmFile=tfmFileL,
+                    intplMode='Linear',
+                    labelMap=False)
+        )
         
 
         # Deformable resampling
         # deformWarp(cmtkPath, inImg, refImg, outImg, xform, scrPath, bashPath)
+        inImgD = outImgL
+        refImgD = os.path.join(self.nii_folder, 'ex_3d_cropped.nii')
+        outImgD = os.path.join(self.nii_folder, files[eachF].split('.')[0]+'_deformable.nii')
+        xform = os.path.join(self.cmtk_folder, 'warp_output_transform')
+        scrPath = os.path.join(self.script_folder, 
+                               f"warp_{eachF.split('.')[0]}_{int(time.time())}.sh")
         output.update(
             deformWarp(cmtkPath=self.cmtk_path,
-                   inImg=os.path.join(self.nii_folder, eachF),
-                   refImg=os.path.join(self.nii_folder, 'ex_3d_cropped.nii'),
-                   outImg=os.path.join(self.nii_folder, files[eachF].split('.')[0]+'_deformable.nii'),
-                   xform=os.path.join(self.cmtk_folder, 'warp_output_transform'),
-                   scrPath=os.path.join(self.script_folder, 
-                                f"warp_{eachF.split('.')[0]}_{int(time.time())}.sh"),
-                   bashPath=self.bash_path)
+                    inImg=inImgD,
+                    refImg=refImgD,
+                    outImg=outImgD,
+                    xform=xform,
+                    scrPath=scrPath,
+                    bashPath=self.bash_path)
         )
         print(eachF)
 
