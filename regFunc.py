@@ -625,7 +625,7 @@ def step2_6(self):
     ]
 
     # Define the possible PK maps
-    pkMaps = [f'{(os.path.splitext(i)[0])}_to_(in_3d).nii' for i in self.pkMaps]
+    pkMaps = [f'({os.path.splitext(i)[0]})_to_(in_3d).nii' for i in self.pkMaps]
 
     # Add them to otherFile
     otherFile += pkMaps

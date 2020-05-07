@@ -480,13 +480,18 @@ def deformWarp(cmtkPath, inImg, refImg, outImg, xform, scrPath, bashPath):
         scrPath {str} -- path of the folder to generate the script
         bashPath {str} -- path of the bash shell
     """
-    tmpl = 'export CMTK_WRITE_UNCOMPRESSED=1\n"{}"/reformatx -o "{}" --floating "{}" "{}" "{}"'
+    tmpl = 'export CMTK_WRITE_UNCOMPRESSED=1\n"{}" -o "{}" --floating "{}" "{}" "{}"'
 
     with open(scrPath, 'w') as f:
-        content = tmpl.format(cmtkPath, outImg, inImg, refImg, xform)
+        content = tmpl.format(os.path.realpath(os.path.join(cmtkPath, 'reformatx')), 
+                              os.path.realpath(outImg), 
+                              os.path.realpath(inImg),
+                              os.path.realpath(refImg), 
+                              os.path.realpath(xform))
         f.write(content)
 
-    cmd = '"%s" "%s"' % (bashPath, scrPath)
+    cmd = '"%s" "%s"' % (os.path.realpath(bashPath), 
+                         os.path.realpath(scrPath))
     runCmd(cmd)
     
     state = True if os.path.exists(outImg) else False
