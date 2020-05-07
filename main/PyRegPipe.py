@@ -123,6 +123,24 @@ class PyRegPipeWidget:
         self.cmtkOutput = [
             '(in_3d_log_masked)_into_(ex_3d_cropped)_deformable.nii',
             '(in_3d)_into_(ex_3d_cropped)_deformable.nii']
+
+        self.pkMaps = ['in_dce_gd.nii',
+                        'in_dce_auc.nii',
+                        'in_dce_ire.nii',
+                        'in_dce_irw.nii',
+                        'in_dce_me.nii',
+                        'in_dce_tonset.nii',
+                        'in_dce_twashout.nii',
+                        'in_dce_ttp.nii',
+                        'in_ktrans_left_femoral.nii',
+                        'in_ktrans_right_femoral.nii',
+                        'in_ktrans_weinmann.nii',
+                        'in_ktrans_parker.nii',
+                        'in_ve_left_femoral.nii',
+                        'in_ve_right_femoral.nii',
+                        'in_ve_weinmann.nii',
+                        'in_ve_parker.nii',
+                        'in_iaugc60.nii']
     
     @staticmethod
     def createComboBox(items):
