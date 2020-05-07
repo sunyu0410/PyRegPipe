@@ -200,12 +200,12 @@ def step1_4(self):
     for eachPk in self.pk_folders:
         output.update(
             cvtITK(os.path.join(self.pk_dcm_folder, eachPk), 
-                    self.nii_folder, f'in_dce_{eachPk}.nii')
+                    self.nii_folder, f'{eachPk}.nii')
         )
         output.update(
-            warpImg(inImg=os.path.join(self.nii_folder, f'in_dce_{eachPk}.nii'),
-                refImg=os.path.join(self.nii_folder, f'in_dce_{eachPk}.nii'),
-                outImg=os.path.join(self.nii_folder, f'(in_dce_{eachPk})_to_(in_3d).nii'),
+            warpImg(inImg=os.path.join(self.nii_folder, f'{eachPk}.nii'),
+                refImg=os.path.join(self.nii_folder, f'{eachPk}.nii'),
+                outImg=os.path.join(self.nii_folder, f'({eachPk})_to_(in_3d).nii'),
                 pixelT='float',
                 tfmFile=os.path.join(self.tfm_folder, '(in_twist#)_to_(in_3d).tfm'),
                 intplMode='Linear')
