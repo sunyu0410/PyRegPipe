@@ -300,13 +300,13 @@ def step2_2(self):
     key = 'step2_2'
     # 4. Register ex vivo 3D with ex vivo 2D
     # From patient 11 onwards
-    ex_3d_head_coil_path = os.path.join(self.nii_folder, 'ex_3d_head_coil.nii')
+    ex_3d_real_path = os.path.join(self.nii_folder, 'ex_3d_real.nii')
     saved = shutil.copy(os.path.join(self.nii_folder, 'ex_3d.nii'),
-                        ex_3d_head_coil_path)
+                        ex_3d_real_path)
     if saved:
-        output = {ex_3d_head_coil_path: True}
+        output = {ex_3d_real_path: True}
     # Manual alignment
-    ex_3d = slicer.util.loadVolume(os.path.join(self.nii_folder, 'ex_3d_head_coil.nii'))
+    ex_3d = slicer.util.loadVolume(os.path.join(self.nii_folder, 'ex_3d_real.nii'))
     ex_2d = slicer.util.loadVolume(os.path.join(self.nii_folder, 'ex_2d.nii'))
     tfm_manual_path = os.path.join(self.tfm_folder, '(ex_3d)_to_(ex_2d)_manual.tfm')
     if not os.path.exists(tfm_manual_path):
@@ -340,7 +340,7 @@ def step2_2(self):
     output.update(
         rigidReg(
             fixedImg = os.path.join(self.nii_folder, 'ex_2d.nii'),
-            movingImg = os.path.join(self.nii_folder, 'ex_3d_head_coil.nii'),
+            movingImg = os.path.join(self.nii_folder, 'ex_3d_real.nii'),
             outImg = None,
             outTfm = os.path.join(self.tfm_folder, '(ex_3d)_to_(ex_2d)_auto.tfm'),
             initTfm = os.path.join(self.tfm_folder, '(ex_3d)_to_(ex_2d)_manual.tfm')
@@ -349,8 +349,8 @@ def step2_2(self):
 
     output.update(
         # Resampling to get the 'to' file
-        warpImg(inImg=os.path.join(self.nii_folder, 'ex_3d_head_coil.nii'),
-                refImg=os.path.join(self.nii_folder, 'ex_3d_head_coil.nii'),
+        warpImg(inImg=os.path.join(self.nii_folder, 'ex_3d_real.nii'),
+                refImg=os.path.join(self.nii_folder, 'ex_3d_real.nii'),
                 outImg=os.path.join(self.nii_folder, '(ex_3d)_to_(ex_2d).nii'),
                 pixelT='uint',
                 tfmFile=os.path.join(self.tfm_folder, '(ex_3d)_to_(ex_2d)_auto.tfm'),
@@ -367,7 +367,7 @@ def step2_2(self):
     )
             
     # Check the registration
-    # ex_3d = slicer.util.loadVolume(os.path.join(self.nii_folder, 'ex_3d_head_coil.nii'))
+    # ex_3d = slicer.util.loadVolume(os.path.join(self.nii_folder, 'ex_3d_real.nii'))
     # ex_2d = slicer.util.loadVolume(os.path.join(self.nii_folder, 'ex_2d.nii'))
     # result = slicer.util.loadVolume(os.path.join(self.nii_folder, '(ex_3d)_into_(ex_2d).nii'))
     # print("Please check the registration.")
