@@ -642,6 +642,7 @@ def step2_6(self):
 
         # Skip not existed files (possible for PK maps)
         if not os.path.exists(inImgL):
+            print(f'Skipping {eachF}')
             continue
 
         refImgL = os.path.join(self.nii_folder, 'ex_3d_cropped.nii')
@@ -649,7 +650,7 @@ def step2_6(self):
         tfmFileL = os.path.join(self.tfm_folder, '(in_3d)_to_(ex_xd).tfm')
         # Rigid resampling
         output.update(
-            warpImg(inImg=refImgL,
+            warpImg(inImg=inImgL,
                     refImg=refImgL,
                     outImg=outImgL,
                     pixelT='float',
@@ -657,7 +658,6 @@ def step2_6(self):
                     intplMode='Linear',
                     labelMap=False)
         )
-        
 
         # Deformable resampling
         # deformWarp(cmtkPath, inImg, refImg, outImg, xform, scrPath, bashPath)
@@ -676,8 +676,6 @@ def step2_6(self):
                     scrPath=scrPath,
                     bashPath=self.bash_path)
         )
-        print(eachF)
-
     
     update(self, key, output)
 
