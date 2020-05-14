@@ -179,13 +179,13 @@ class WarpImgWidget:
 
         for eachF in flWarp:
             # Rigid resampling
-            # into_(in_3d)
+            # to_(in_3d)
             inImgT = flWarp[eachF]
             if not inImgT:
                 print(f'Skipping {eachF}')
                 continue
-            refImgT = flAssc['in_3d.nii']
-            outFnameT = f"({eachF.split('.nii')[0]})_into_(in_3d).nii"
+            refImgT = inImgT
+            outFnameT = f"({eachF.split('.nii')[0]})_to_(in_3d).nii"
             outImgT = os.path.join(outDirT, outFnameT)
             tfmFileT = flAssc['(in_twist*)_to_(in_3d).tfm']
             warpImg(inImg=inImgT,  refImg=refImgT, outImg=outImgT, pixelT='float',
