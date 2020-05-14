@@ -63,8 +63,26 @@ class ToNIfTIWidget:
 
 
         # Files to warp
-        self.filesCvt = ['gd', 'auc', 'ire', 'irw', 'me', 'tonset', 
-                          'twashout', 'ttp']
+        # self.filesCvt = ['gd', 'auc', 'ire', 'irw', 'me', 'tonset', 
+        #                   'twashout', 'ttp']
+
+        self.filesCvt = {'auc': 'in_dce_auc',
+                        'gd': 'in_dce_gd',
+                        'iaugc60': 'in_iaugc60',
+                        'ire': 'in_dce_ire',
+                        'irw': 'in_dce_irw',
+                        'ktrans_left_femoral': 'in_ktrans_left_femoral',
+                        'ktrans_parker': 'in_ktrans_parker',
+                        'ktrans_right_femoral': 'in_ktrans_right_femoral',
+                        'ktrans_weinmann': 'in_ktrans_weinmann',
+                        'me': 'in_dce_me',
+                        'tonset': 'in_dce_tonset',
+                        'ttp': 'in_dce_ttp',
+                        'twashout': 'in_dce_twashout',
+                        've_left_femoral': 'in_ve_left_femoral',
+                        've_parker': 'in_ve_parker',
+                        've_right_femoral': 'in_ve_right_femoral',
+                        've_weinmann': 'in_ve_weinmann'}
 
         # Project folder
         self.labels['lPrj'] = self.createLabel("DYNAMIKA DICOM folder(s)", 
@@ -113,9 +131,14 @@ class ToNIfTIWidget:
         prjFolder = self.textareas['vPrj'].toPlainText().strip().split()
         assert len(prjFolder) == 1
         for eachF in self.filesCvt:
-            match = glob(os.path.join(prjFolder[0] + f'\\*{eachF}*'))
-            if match:
-                fl[eachF] = match[0]
+            keywords = eachF.split('_')
+            result = []
+            for kw in keywords:
+                match = glob(os.path.join(prjFolder[0] + f'\\*{kw}*') + '\\')
+                result.append(set(match))
+            final = set.intersection(*result)
+            if final:
+                fl[eachF] = list(final)[0]
         self.textareas['vFndF'].setText(pformat(fl, width=60))
 
     def cvtImg(self):
@@ -132,8 +155,10 @@ class ToNIfTIWidget:
         assert all([os.path.exists(i) for i in fl.values() if i is not None])
 
         for eachF in fl:
-            # Rigid resampling
-            eachFname = f'in_dce_{eachF}.nii'
+            if not fl[eachF]:
+                print(f'Skipping {eachF}')
+                continue
+            eachFname = self.filesCvt[eachF]+'.nii'
             print(f'Converting {fl[eachF]}')
             cvtITK(fl[eachF], outDir, eachFname)
             
