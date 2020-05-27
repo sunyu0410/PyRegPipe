@@ -1,7 +1,12 @@
 # PyRegPipe
+
 The automatic registration framework using Python for 3D Slicer, developed for the BiRT project.
 
 Developed and maintained by [Yu Sun](mailto:yu.sun@sydney.edu.au). No Python objectas are harmed during the development phase.
+
+
+![design.PNG](./img/design.PNG)
+
 
 ## Reference
 This framework utilises the Python environment in 3D Slicer for automating the registration steps developed by Reynolds, *et al*. 
