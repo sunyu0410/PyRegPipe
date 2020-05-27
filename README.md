@@ -14,7 +14,7 @@ Versions at the time of creation:
 
 ## Modules
 There are currently four modules (under the `main` folder):
-* `PyRegPipe.py`: the main module which implements the steps to perform **in vivo** to **ex vivo** registration. 
+* `PyRegPipe.py`: the main module which implements the steps to perform *in vivo* to *ex vivo* registration. 
 * `ToNIfTI.py`: a module for converting DYNAMIKA DICOM to NIfTI files
 * `PrepPk.py`: a module for preparing the folders for DYNAMIKA pharmacokinetic maps.
-* `WarpImg.py`: (for heritage files) a module for warping images from the **in vivo** space into the **ex vivo** space, given the exisitng CMTK transformation folder.
+* `WarpImg.py`: (for heritage files) a module for warping images from the *in vivo* space into the *ex vivo* space, given the exisitng CMTK transformation folder.
