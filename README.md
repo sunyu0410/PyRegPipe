@@ -1,9 +1,9 @@
 # PyRegPipe
 The automatic registration framework using Python for 3D Slicer, developed for the BiRT project.
 
-Maintained by Yu Sun, yu.sun@sydney.edu.au
+Developed and maintained by [Yu Sun](mailto:yu.sun@sydney.edu.au). No Python objectas are harmed during the development phase.
 
-## Design
+## Reference
 This framework utilises the Python environment in 3D Slicer for automating the registration steps developed by Reynolds, *et al*. 
 
 > `Med Phys. 2015 Dec;42(12):7078-89. doi: 10.1118/1.4935343.`
@@ -170,7 +170,7 @@ import sys
 sys.path.append(r'I:/code')
 ``` 
 
-Then you can import `reg.py` since it's now under the search path. Here I just import all functions since it's unlikely to have name clashes with the system variables.
+Then you can import `reg.py` since it's now under the search path. Here all functions are imported since it's unlikely to have name clashes with the system variables.
 ```python
 from reg import *
 ```
@@ -221,7 +221,7 @@ The framework is a module in 3D Slicer and complies with the requirements from S
 
 * `regFunc.py`: this file defines the action of each step. It uses the functions defined in the utility file `reg.py`. The action for each step will be read by `regSpecs.py` and linked with the buttons accessible to the user.
 
-* `reg.py`: defines the commonly used tasks as functions. These functions can be called individually. Please refer to [here](https://bitbucket.org/chengsoon.ong/mrhist/wiki/python-in-slicer-3) for more information.
+* `reg.py`: defines the commonly used tasks as functions. These functions can be called individually.
 
 ## Details
 Let's have a closer look from the bottom up.
@@ -377,7 +377,7 @@ The module panel consists of the following parts:
 5. Flip Image: a utility to flip the image along an axis;
 6. Save: click this to save the progress. A Python pickle file called `setting` will be created. Settings will be automatically loaded if Python finds this `setting` file.
 
-Each registration exercise will be considered as a project. Click `Main Panel` and you will prompted to choose a project folder. The project folder needs to contain a subfolder named `data` which holds all the necessary files. Refer [here](https://bitbucket.org/chengsoon.ong/mrhist/wiki/python-in-slicer-4) (under "Folder structure") for the requirements on `data`. If the project folder doesn't comply with the required structure, it will fail to initiate the project. An example dataset can be found [here](https://www.dropbox.com/sh/lkm5xrunkbarqca/AAB9u0uBOsY49qCD5SCJMiAPa?dl=0).
+Each registration exercise will be considered as a project. Click `Main Panel` and you will prompted to choose a project folder. The project folder needs to contain a subfolder named `data` which holds all the necessary files. If the project folder doesn't comply with the required structure, it will fail to initiate the project.
 
 Once the project folder is chosen, you will be asked to input the patient number (an integer).
 
@@ -397,24 +397,25 @@ When you hover the mouse over the text (left of the Apply button), you will see 
 The following section will go through the workflow of `mrhist039` as an example.
 
 #### Step 1
-* `step1_1` (T2w Iamges): click "Apply";
-* `step1_2` (DWI): click "Apply";
-* `step1_3` (BOLD, only shown if BOLD data present): click "Apply". 
+* `step1_1` (T2w Iamges): click `Apply`;
+* `step1_2` (DWI): click `Apply`;
+* `step1_3` (BOLD, only shown if BOLD data present): click `Apply`. 
     * ImageJ will be called to compute the R2Star maps. When prompted, choose the first image under `prjFolder/temp/R2STAR`. Since ImageJ will memorise the last location, make sure you're under the right `prjFolder`. Once selected, press YES for importing the image series. ImageJ will compute the R2Star map with a number of temporary windows. 
     * Check the orientation of the R2Star map. Use the Flip Image utility when necessary to flip the image.
-* `step1_4` (DCE-MRI): click "Apply";
+* `step1_4` (DCE-MRI): click `Apply`;
 
 #### Step 2
-* `step2_1` (Conversion): click "Apply";
-* `step2_2` (Ex vivo 2D 3D): click "Apply". 
+* `step2_1` (Conversion): click `Apply`;
+* `step2_2` (Ex vivo 2D 3D): click `Apply`. 
     * You will be prompted to manually align the `ex_2d` and `ex_3d`. Instructions in the Python console.
-* `step2_3` (Crop and mask): click "Apply"; 
+* `step2_3` (Crop and mask): click `Apply`; 
     * You will be prompted to crop the `ex_3d`. Instructions in the Python console.
-* `step2_4` (Manual align and resample): click "Apply";
+* `step2_4` (Manual align and resample): click `Apply`;
     * You will be prompted to manually align the `in_3d` and `(ex_3d)_into_(ex_2d`. Instructions in the Python console. 
-* `step2_5` (Run with CMTK): click "Apply";
+* `step2_5` (Run with CMTK): click `Apply`;
 
 > For all manual adjustment (e.g. manual alignment), the automated framework will select the right module (e.g. Transform) and create the right output volume. The user can focus on the task.
 
 ---
-This is the end of the document. Any questions please contact [Yu Sun](mailto:yu.sun@sydney.edu.au).
+This is the end of the document.
+
