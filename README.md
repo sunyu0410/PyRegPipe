@@ -5,7 +5,7 @@ The automatic registration framework using Python for 3D Slicer, developed for t
 Developed and maintained by [Yu Sun](mailto:yu.sun@sydney.edu.au). No Python objectas are harmed during the development phase.
 
 
-![design.PNG](./img/design.PNG)
+![design.PNG](./img/design.png)
 
 
 ## Reference
