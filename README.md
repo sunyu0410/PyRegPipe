@@ -312,7 +312,7 @@ for key in keys:
 A project file need to be specified. The automated framework will manage the files in different sub-folders:
 
 * `Data`: this is the only folder that needs to be set up by the user. It needs to have the following structure. Except for `prostate_contours_from_slicer`, the other folders will contain the DICOM images. Once the user specifies the project folder, the automated framework will check the existence of `data` and its structure.
-
+```
       - data
           - in_vivo_mri
               - in_3d
@@ -331,7 +331,7 @@ A project file need to be specified. The automated framework will manage the fil
           - prostate_contours_from_slicer
               - xx_in_2d-label.nrrd (xx is the patient number)
               - xx_ex_2d-label.nrrd (xx is the patient number)
-
+```
 
 * `nifti`: this folder contains the NIfTI (`.nii`) files generated. 
 * `transformation`: contains the transformation (`.tfm`) files generated.
@@ -418,4 +418,3 @@ The following section will go through the workflow of `mrhist039` as an example.
 
 ---
 This is the end of the document. Any questions please contact [Yu Sun](mailto:yu.sun@sydney.edu.au).
-
