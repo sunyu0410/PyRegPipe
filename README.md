@@ -11,7 +11,7 @@ Developed and maintained by [Yu Sun](mailto:yu.sun@sydney.edu.au). No Python obj
 ## Reference
 This framework utilises the Python environment in 3D Slicer for automating the registration steps developed by Reynolds, *et al*. 
 
-> `Reynolds, et. al., Med Phys. 2015 Dec;42(12):7078-89. doi: 10.1118/1.4935343.`
+> `Reynolds, et. al., "Development of a Registration Framework to Validate MRI With Histology for Prostate Focal Therapy", Med Phys. 2015 Dec;42(12):7078-89. doi: 10.1118/1.4935343.`
 
 Versions at the time of creation:
 * Python v3.6.7
