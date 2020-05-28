@@ -33,11 +33,11 @@ Currently the framework only automates up to the *in vivo* - *ex vivo* registrat
 ### Setup
 There are two components regarding the file:
 
-* A set of [tools](https://www.dropbox.com/sh/lkm5xrunkbarqca/AAB9u0uBOsY49qCD5SCJMiAPa?dl=0) including 3D Slicer, CMTK, ImageJ and some bash utilities. These are in the folder `Tools`;
+* A set of tools including 3D Slicer, CMTK, ImageJ and some bash utilities. These are in the folder `Tools`;
 * The code which lives in the folder `code` (this repository).
 
 To set up and use the framework:
-* Download the `PyRegPipe.zip` [here](https://www.dropbox.com/sh/lkm5xrunkbarqca/AAB9u0uBOsY49qCD5SCJMiAPa?dl=0) and unzip into a folder (referred as `topFolder`). This includes the 3D Slicer, CMTK, ImageJ and some bash utilities.
+* Download the `PyRegPipe.zip` [here](https://www.dropbox.com/sh/lkm5xrunkbarqca/AAB9u0uBOsY49qCD5SCJMiAPa?dl=0) and unzip into a folder (referred as `topFolder`). This contains the `Tools` folder mentioned earlier and an empty `code` folder.
 * Download this [repository](https://github.com/sunyu0410/PyRegPipe/archive/master.zip) and unzip into the `code` folder. This provides the modules for the registration framework.
 
 This is the correct folder structure:
