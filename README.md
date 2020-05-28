@@ -86,22 +86,22 @@ When you hover the mouse over the text (left of the Apply button), you will see 
 The following section will go through the workflow of `mrhist039` as an example.
 
 #### Step 1
-* `step1_1` (T2w Iamges): click `Apply`;
-* `step1_2` (DWI): click `Apply`;
-* `step1_3` (BOLD, only shown if BOLD data present): click `Apply`. 
+* `step1_1` (T2w Iamges): click **Apply**;
+* `step1_2` (DWI): click **Apply**;
+* `step1_3` (BOLD, only shown if BOLD data present): click **Apply**. 
     * ImageJ will be called to compute the R2Star maps. When prompted, choose the first image under `prjFolder/temp/R2STAR`. Since ImageJ will memorise the last location, make sure you're under the right `prjFolder`. Once selected, press YES for importing the image series. ImageJ will compute the R2Star map with a number of temporary windows. 
     * Check the orientation of the R2Star map. Use the Flip Image utility when necessary to flip the image.
-* `step1_4` (DCE-MRI): click `Apply`;
+* `step1_4` (DCE-MRI): click **Apply**;
 
 #### Step 2
-* `step2_1` (Conversion): click `Apply`;
-* `step2_2` (*ex vivo* 2D 3D): click `Apply`. 
+* `step2_1` (Conversion): click **Apply**;
+* `step2_2` (*ex vivo* 2D 3D): click **Apply**. 
     * You will be prompted to manually align the `ex_2d` and `ex_3d`. Instructions in the Python console.
-* `step2_3` (Crop and mask): click `Apply`; 
+* `step2_3` (Crop and mask): click **Apply**; 
     * You will be prompted to crop the `ex_3d`. Instructions in the Python console.
-* `step2_4` (Manual align and resample): click `Apply`;
+* `step2_4` (Manual align and resample): click **Apply**;
     * You will be prompted to manually align the `in_3d` and `(ex_3d)_into_(ex_2d`. Instructions in the Python console. 
-* `step2_5` (Run with CMTK): click `Apply`;
+* `step2_5` (Run with CMTK): click **Apply**;
 
 > For all manual adjustment (e.g. manual alignment), the automated framework will select the right module (e.g. Transform) and create the right output volume. The user can focus on the task.
 
