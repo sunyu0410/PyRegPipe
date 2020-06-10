@@ -107,6 +107,9 @@ The following section will go through the workflow of `mrhist039` as an example.
 
 The following text describes the background information and the design of the framework. If you're new to Python in 3D Slicer, you might find it helpful.
 
+### DCE-MRI motion correction
+The slice for motion correction is in `dce_motion.py`. Currently it's defined up to mrhist045. For new patients, you simply add the information at the end.
+
 ## Python in 3D Slicer
 
 There are two major aspects for using Python in Slicer: **automation** and **module development**. First, Slicer has an *embedded Python interpreter* which can be used to automate most tasks. This includes loading a file, run a specific module, set the window content, etc. Secondly, Python can be used to develop what's called a *scripted module* in Slicer. These two aspects are often closely inter-related as the scripted module typically applies Python automation to achieve its goals.
