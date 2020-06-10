@@ -317,6 +317,7 @@ def step2_2(self):
     selectModule(slicer.modules.transforms)
     try:
         _ = input("Please manually adjust the initial alignment. \n\
+                   (Notice no head coil is involved.) \n\
                    1. Select (ex_3d)_to_(ex_2d)_manual as the active transform; \n\
                    2. Use the slider to adjust the alignment; \n\
                    3. Press ENTER to continue. ")
