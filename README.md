@@ -108,7 +108,17 @@ The following section will go through the workflow of `mrhist039` as an example.
 The following text describes the background information and the design of the framework. If you're new to Python in 3D Slicer, you might find it helpful.
 
 ### DCE-MRI motion correction
-The slice for motion correction is in `dce_motion.py`. Currently it's defined up to mrhist045. For new patients, you simply add the information at the end.
+The slice for motion correction is in `dce_motion.py`. Currently it's defined up to mrhist045. For new patients, you simply add the information at the end. Note that there is no comma after the last item.
+
+```
+    {
+    ...
+    'mrhist043': '16',
+    'mrhist044': '25',
+    'mrhist045': '15',
+    'new_patient': 'slice_number'
+    }
+```
 
 ## Python in 3D Slicer
 
