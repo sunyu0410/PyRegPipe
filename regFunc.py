@@ -298,6 +298,7 @@ def step2_1(self):
 def step2_2(self):
     '''Step 2: 4'''
     key = 'step2_2'
+    output = {}
     # 4. Register ex vivo 3D with ex vivo 2D
     # The part for ex_3d_head_coil has been removed
     
