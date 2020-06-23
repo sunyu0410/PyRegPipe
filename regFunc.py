@@ -34,23 +34,32 @@ def step1_1(self):
     key = 'step1_1'
     output = self.mergeDict(
         cvtITK(self.in_3d_dcm_folder, self.nii_folder, 'in_3d.nii'),
-        cvtITK(self.in_2d_dcm_folder, self.nii_folder, 'in_2d.nii'),
+        cvtITK(self.in_2d_dcm_folder, self.nii_folder, 'in_2d.nii')
+    )
+
+    outTfm = path.join(self.tfm_folder, '(in_2d)_to_(in_3d).tfm')
+    if not path.exists():
         # Rigid registration, (in_2d)_to_(in_3d).tfm
         rigidReg(fixedImg=path.join(self.nii_folder, 'in_3d.nii'),
                 movingImg=path.join(self.nii_folder, 'in_2d.nii'),
                 outImg=None,
-                outTfm=path.join(self.tfm_folder, '(in_2d)_to_(in_3d).tfm')),
+                outTfm=outTfm)
+
+    output.update(
         # Create the (in_2d)_to_(in_3d).nii
         warpImg(inImg=os.path.join(self.nii_folder, 'in_2d.nii'),
                 refImg=os.path.join(self.nii_folder, 'in_2d.nii'),
                 outImg=os.path.join(self.nii_folder, '(in_2d)_to_(in_3d).nii'),
                 pixelT='float',
-                tfmFile=os.path.join(self.tfm_folder, '(in_2d)_to_(in_3d).tfm'),
-                intplMode='Linear'),
-        # Inverse the (in_2d)_to_(in_3d).tfm
-        invertTfm(path.join(self.tfm_folder, '(in_2d)_to_(in_3d).tfm'),
-                    path.join(self.tfm_folder, '(in_3d)_to_(in_2d).tfm'))
+                tfmFile=outTfm,
+                intplMode='Linear')
     )
+
+    output.update(
+        # Inverse the (in_2d)_to_(in_3d).tfm
+        invertTfm(outTfm, path.join(self.tfm_folder, '(in_3d)_to_(in_2d).tfm'))
+    )
+
     update(self, key, output)
 
 def step1_2(self):
@@ -66,27 +75,39 @@ def step1_2(self):
     output = self.mergeDict(
         # Convert the b=50 dcm files to in_dwi_b50.nii
         cvtITK(os.path.join(self.sort_dwi_folder, '50'),
-                    self.nii_folder, 'in_dwi_b50.nii'),
+                    self.nii_folder, 'in_dwi_b50.nii')
+    )
+
+    outTfm = os.path.join(self.tfm_folder, '(in_dwi_b50)_to_(in_3d).tfm')
+    if not path.exists(outTfm):
         # Rigid registration to in_3d
         rigidReg(fixedImg=os.path.join(self.nii_folder, 'in_3d.nii'),
                 movingImg=os.path.join(self.nii_folder, 'in_dwi_b50.nii'),
                 outImg=None,
-                outTfm=os.path.join(self.tfm_folder, '(in_dwi_b50)_to_(in_3d).tfm')),
+                outTfm=outTfm)
+                
+    output.update(
         # Create the (in_dwi_b50)_to_(in_3d).nii
         warpImg(inImg=os.path.join(self.nii_folder, 'in_dwi_b50.nii'),
                 refImg=os.path.join(self.nii_folder, 'in_dwi_b50.nii'),
                 outImg=os.path.join(self.nii_folder, '(in_dwi_b50)_to_(in_3d).nii'),
                 pixelT='float',
-                tfmFile=os.path.join(self.tfm_folder, '(in_dwi_b50)_to_(in_3d).tfm'),
-                intplMode='Linear'),
+                tfmFile=outTfm,
+                intplMode='Linear')
+    )
+
+    output.update(
         # Convert ADC to in_adc.nii
-        cvtITK(self.adc_dcm_folder, self.nii_folder, 'in_adc.nii'),
+        cvtITK(self.adc_dcm_folder, self.nii_folder, 'in_adc.nii')
+    )
+
+    output.update(
         # Apply (in_dwi_b50)_to_(in_3d).tfm on in_adc
         warpImg(inImg=os.path.join(self.nii_folder, 'in_adc.nii'),
                 refImg=os.path.join(self.nii_folder, 'in_adc.nii'),
                 outImg=os.path.join(self.nii_folder, '(in_adc)_to_(in_3d).nii'),
                 pixelT='float',
-                tfmFile=os.path.join(self.tfm_folder, '(in_dwi_b50)_to_(in_3d).tfm'),
+                tfmFile=outTfm,
                 intplMode='Linear')
     )
     update(self, key, output)
@@ -107,20 +128,27 @@ def step1_3(self):
         self.bold_echo2_folder = os.path.join(self.sort_bold_folder, '9.84')
         output = self.mergeDict(
             # Conver the second echo time (9.84 ms) to .nii
-            cvtITK(self.bold_echo2_folder, self.nii_folder, 'in_bold_echo2.nii'),
+            cvtITK(self.bold_echo2_folder, self.nii_folder, 'in_bold_echo2.nii')
+        )
+
+        outTfm = os.path.join(self.tfm_folder, '(in_bold_echo2)_to_(in_3d).tfm')
+        if not path.exists(outTfm):
             # Co-register to in_3d
             rigidReg(fixedImg=os.path.join(self.nii_folder, 'in_3d.nii'),
                     movingImg=os.path.join(self.nii_folder, 'in_bold_echo2.nii'),
                     outImg=None,
-                    outTfm=os.path.join(self.tfm_folder, '(in_bold_echo2)_to_(in_3d).tfm')),
+                    outTfm=outTfm)
+
+        output.update(
             # Resampling to get the 'to' file
             warpImg(inImg=os.path.join(self.nii_folder, 'in_bold_echo2.nii'),
                     refImg=os.path.join(self.nii_folder, 'in_bold_echo2.nii'),
                     outImg=os.path.join(self.nii_folder, '(in_bold_echo2)_to_(in_3d).nii'),
                     pixelT='float',
-                    tfmFile=os.path.join(self.tfm_folder, '(in_bold_echo2)_to_(in_3d).tfm'),
+                    tfmFile=outTfm,
                     intplMode='Linear')
         )
+
         # Generate R2* map
         self.temp_r2star_folder = os.path.join(self.temp_folder, 'R2STAR')
         if path.exists(self.temp_r2star_folder):
@@ -164,7 +192,7 @@ def step1_3(self):
                     refImg=os.path.join(self.nii_folder, 'in_r2star.nii'),
                     outImg=os.path.join(self.nii_folder, '(in_r2star)_to_(in_3d).nii'),
                     pixelT='float',
-                    tfmFile=os.path.join(self.tfm_folder, '(in_bold_echo2)_to_(in_3d).tfm'),
+                    tfmFile=outTfm,
                     intplMode='Linear')
         )
 
@@ -183,17 +211,23 @@ def step1_4(self):
     self.t1_nii_filename = 'in_twist%s.nii' % self.dce_motion_slice
     output = self.mergeDict(
         cvtITK(self.t1_motion_cor_folder, self.nii_folder, 
-                    self.t1_nii_filename),
+                    self.t1_nii_filename)
+    )
+
+    outTfm = os.path.join(self.tfm_folder, '(in_twist#)_to_(in_3d).tfm')
+    if not path.exists(outTfm):
         rigidReg(fixedImg=os.path.join(self.nii_folder, 'in_3d.nii'),
                 movingImg=os.path.join(self.nii_folder, self.t1_nii_filename),
                 outImg=None,
-                outTfm=os.path.join(self.tfm_folder, '(in_twist#)_to_(in_3d).tfm')),
+                outTfm=outTfm)
+    
+    output.update(
         # Resampling to get the 'to' file
         warpImg(inImg=os.path.join(self.nii_folder, self.t1_nii_filename),
                 refImg=os.path.join(self.nii_folder, self.t1_nii_filename),
                 outImg=os.path.join(self.nii_folder, '(in_twist#)_to_(in_3d).nii'),
                 pixelT='float',
-                tfmFile=os.path.join(self.tfm_folder, '(in_twist#)_to_(in_3d).tfm'),
+                tfmFile=outTfm,
                 intplMode='Linear')
     )
 
@@ -207,7 +241,7 @@ def step1_4(self):
                 refImg=os.path.join(self.nii_folder, f'{eachPk}.nii'),
                 outImg=os.path.join(self.nii_folder, f'({eachPk})_to_(in_3d).nii'),
                 pixelT='float',
-                tfmFile=os.path.join(self.tfm_folder, '(in_twist#)_to_(in_3d).tfm'),
+                tfmFile=outTfm,
                 intplMode='Linear')
         )
 
