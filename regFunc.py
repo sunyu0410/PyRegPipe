@@ -38,12 +38,14 @@ def step1_1(self):
     )
 
     outTfm = path.join(self.tfm_folder, '(in_2d)_to_(in_3d).tfm')
-    if not path.exists():
+    if not path.exists(outTfm):
         # Rigid registration, (in_2d)_to_(in_3d).tfm
         rigidReg(fixedImg=path.join(self.nii_folder, 'in_3d.nii'),
                 movingImg=path.join(self.nii_folder, 'in_2d.nii'),
                 outImg=None,
                 outTfm=outTfm)
+    else:
+        print(f'Using existing transformation:\n\t{outTfm}')
 
     output.update(
         # Create the (in_2d)_to_(in_3d).nii
@@ -85,6 +87,8 @@ def step1_2(self):
                 movingImg=os.path.join(self.nii_folder, 'in_dwi_b50.nii'),
                 outImg=None,
                 outTfm=outTfm)
+    else:
+        print(f'Using existing transformation:\n\t{outTfm}')
                 
     output.update(
         # Create the (in_dwi_b50)_to_(in_3d).nii
@@ -137,7 +141,9 @@ def step1_3(self):
             rigidReg(fixedImg=os.path.join(self.nii_folder, 'in_3d.nii'),
                     movingImg=os.path.join(self.nii_folder, 'in_bold_echo2.nii'),
                     outImg=None,
-                    outTfm=outTfm)
+                    outTfm=outTfm) 
+        else:
+            print(f'Using existing transformation:\n\t{outTfm}')
 
         output.update(
             # Resampling to get the 'to' file
@@ -220,6 +226,8 @@ def step1_4(self):
                 movingImg=os.path.join(self.nii_folder, self.t1_nii_filename),
                 outImg=None,
                 outTfm=outTfm)
+    else:
+        print(f'Using existing transformation:\n\t{outTfm}')
     
     output.update(
         # Resampling to get the 'to' file
