@@ -39,11 +39,14 @@ def step1_1(self):
 
     outTfm = path.join(self.tfm_folder, '(in_2d)_to_(in_3d).tfm')
     if not path.exists(outTfm):
-        # Rigid registration, (in_2d)_to_(in_3d).tfm
-        rigidReg(fixedImg=path.join(self.nii_folder, 'in_3d.nii'),
-                movingImg=path.join(self.nii_folder, 'in_2d.nii'),
-                outImg=None,
-                outTfm=outTfm)
+        output.update(
+            # Rigid registration, (in_2d)_to_(in_3d).tfm
+            rigidReg(fixedImg=path.join(self.nii_folder, 'in_3d.nii'),
+                    movingImg=path.join(self.nii_folder, 'in_2d.nii'),
+                    outImg=None,
+                    outTfm=outTfm)
+        )
+        
     else:
         print(f'Using existing transformation:\n\t{outTfm}')
 
@@ -58,7 +61,7 @@ def step1_1(self):
     )
 
     output.update(
-        # Inverse the (in_2d)_to_(in_3d).tfm
+        # Invert the (in_2d)_to_(in_3d).tfm
         invertTfm(outTfm, path.join(self.tfm_folder, '(in_3d)_to_(in_2d).tfm'))
     )
 
@@ -370,8 +373,6 @@ def step2_2(self):
     print('*'*20, 'Done', '*'*20)
 
     # Save the transformation
-    tfm_manual_path = os.path.join(self.tfm_folder, 
-                        '(ex_3d)_to_(ex_2d)_manual.tfm')
     saved = slicer.util.saveNode(tfm_manual, tfm_manual_path)
     if saved:
         output.update({tfm_manual_path: True})
@@ -389,21 +390,10 @@ def step2_2(self):
 
     output.update(
         # Resampling to get the 'to' file
-        warpImg(inImg=os.path.join(self.nii_folder, 'ex_3d.nii'),
-                refImg=os.path.join(self.nii_folder, 'ex_3d.nii'),
-                outImg=os.path.join(self.nii_folder, '(ex_3d)_to_(ex_2d).nii'),
-                pixelT='uint',
-                tfmFile=os.path.join(self.tfm_folder, '(ex_3d)_to_(ex_2d)_auto.tfm'),
-                intplMode='NearestNeighbor')
-    )
-
-    output.update(
-        warpImg(inImg=os.path.join(self.nii_folder, 'ex_3d.nii'),
-                refImg=os.path.join(self.nii_folder, 'ex_3d.nii'),
-                outImg=os.path.join(self.nii_folder, '(ex_3d)_to_(ex_2d).nii'),
-                pixelT='uint',
-                tfmFile=os.path.join(self.tfm_folder, '(ex_3d)_to_(ex_2d)_auto.tfm'),
-                intplMode='Linear')
+        warpImg2(inImg=os.path.join(self.nii_folder, 'ex_3d.nii'),
+                 outImg=os.path.join(self.nii_folder, '(ex_3d)_to_(ex_2d).nii'),
+                 tfmFile=os.path.join(self.tfm_folder, '(ex_3d)_to_(ex_2d)_auto.tfm')
+                )
     )
             
     # Check the registration

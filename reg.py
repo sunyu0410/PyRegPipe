@@ -150,6 +150,7 @@ def warpImg(inImg, refImg, outImg, pixelT, tfmFile, intplMode, labelMap=False):
     tfmFile: full path to the transform image;
     intplMode: interpolation mode, options include
             Linear, NearestNeighbor, BSpline, WindowedSinc.
+    labelMap: whether the output is a label map (Boolean).
     '''
     slicer.mrmlScene.Clear(0)
     if labelMap:
@@ -171,6 +172,27 @@ def warpImg(inImg, refImg, outImg, pixelT, tfmFile, intplMode, labelMap=False):
     p['interpolationMode'] = intplMode
     slicer.cli.run(cliModule, None, p, wait_for_completion=True)
     state = slicer.util.saveNode(outVolume, outImg)
+    slicer.mrmlScene.Clear(0)
+    return {outImg: state}
+
+def warpImg2(inImg, outImg, tfmFile, labelMap=False):
+    '''Resample an image using an exisiting transform 
+            by hardening the transformation.
+    inImg: full path to the input image (to be resampled);
+    outImg: full path to the output image (resampled image);
+    tfmFile: full path to the transform image;
+    labelMap: whether the output is a label map (Boolean).
+    '''
+    slicer.mrmlScene.Clear(0)
+    if labelMap:
+        inimg = slicer.util.loadLabelVolume(inImg)
+    else:
+        inimg = slicer.util.loadVolume(inImg)
+    tfm = slicer.util.loadTransform(tfmFile)
+    inimg.SetAndObserveTransformNodeID(tfm.GetID())
+    inimg.HardenTransform()
+    # Complete the function here
+    state = slicer.util.saveNode(inimg, outImg)
     slicer.mrmlScene.Clear(0)
     return {outImg: state}
 
