@@ -52,60 +52,9 @@ This is the correct folder structure:
 
 > This is a portable version. You can put the everything on a USB stick.
 
-## First time launch
-You need to register `PyRegPipe.py` as a module. To do that, go to **"Edit" > "Application Settings" > "Modules"**, click "Add" and choose `topFolder/code/main`. You will need to restart Slicer for this to take effect.
+## Detailed instructions
+Details are given in a step-by-step way on [the BitBucket page](https://bitbucket.org/chengsoon.ong/mrhist/wiki/python-slicer-5).
 
-After the restart, you will find the `Python Assisted Registration Pipeline` under the `BiRT` category.
-
-### Get started
-The module panel consists of the following parts:
-1. A notepad area for the user to take notes;
-2. Main Panel: to initiate / show the main panel;
-3. File List: to show the files generated during the process;
-4. Copy Header: a utility to copy the spatial information from a reference image;
-5. Flip Image: a utility to flip the image along an axis;
-6. Save: click this to save the progress. A Python pickle file called `setting` will be created. Settings will be automatically loaded if Python finds this `setting` file.
-
-Each registration exercise will be considered as a project. Click `Main Panel` and you will prompted to choose a project folder. The project folder needs to contain a subfolder named `data` which holds all the necessary files. If the project folder doesn't comply with the required structure, it will fail to initiate the project.
-
-Once the project folder is chosen, you will be asked to input the patient number (an integer).
-
-> The following instructions will use `prjFodler` to refer to the project folder.
-
-### Working in steps
-After the project is initiated, the main panel will be created and shown. There are two main steps:
-
-* `Step 1`: converting DICOM to NIfTI and does the registration between functional MRI and T2w images.
-
-* `Step 2`: *in vivo* to *ex vivo* registration.
-
-When you hover the mouse over the text (left of the Apply button), you will see the detailed list for this task. There is an "Apply" button for each task and a light for status. The light is initiated in orange. It will turn green if no error occur for the tasks, otherwise it will turn red. 
-
-> Here the error simply means a Python error. It doesn't reflect the quality of the registration. E.g. a rigid registration can be run without error but the result can be bad. Hence the user can check the result after each step if wanting to. Use the File List to quickly identify and load the files.
-
-The following section will go through the workflow of `mrhist039` as an example.
-
-#### Step 1
-* `step1_1` (T2w Iamges): click **Apply**;
-* `step1_2` (DWI): click **Apply**;
-* `step1_3` (BOLD, only shown if BOLD data present): click **Apply**. 
-    * ImageJ will be called to compute the R2Star maps. When prompted, choose the first image under `prjFolder/temp/R2STAR`. Since ImageJ will memorise the last location, make sure you're under the right `prjFolder`. Once selected, press YES for importing the image series. ImageJ will compute the R2Star map with a number of temporary windows. 
-    * Check the orientation of the R2Star map. Use the Flip Image utility when necessary to flip the image.
-* `step1_4` (DCE-MRI): click **Apply**;
-
-#### Step 2
-* `step2_1` (Conversion): click **Apply**;
-* `step2_2` (*ex vivo* 2D 3D): click **Apply**. 
-    * You will be prompted to manually align the `ex_2d` and `ex_3d`. Instructions in the Python console.
-* `step2_3` (Crop and mask): click **Apply**; 
-    * You will be prompted to crop the `ex_3d`. Instructions in the Python console.
-* `step2_4` (Manual align and resample): click **Apply**;
-    * You will be prompted to manually align the `in_3d` and `(ex_3d)_into_(ex_2d`. Instructions in the Python console. 
-* `step2_5` (Run with CMTK): click **Apply**;
-
-> For all manual adjustment (e.g. manual alignment), the automated framework will select the right module (e.g. Transform) and create the right output volume. The user can focus on the task.
-
-The following text describes the background information and the design of the framework. If you're new to Python in 3D Slicer, you might find it helpful.
 
 ### DCE-MRI motion correction
 The slice for motion correction is in `dce_motion.py`. Currently it's defined up to mrhist045. For new patients, you simply add the information at the end. Note that there is no comma after the last item.
