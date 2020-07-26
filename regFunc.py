@@ -3,6 +3,7 @@ import sys
 import time
 from os import path
 from pprint import pprint
+from subprocess import Popen
 
 # Add the code folder to the path
 topFolder = os.path.abspath(os.path.join(sys.executable, *([os.pardir]*4)))
@@ -253,7 +254,8 @@ def step1_4(self):
                 outImg=os.path.join(self.nii_folder, f'({eachPk})_to_(in_3d).nii'),
                 pixelT='float',
                 tfmFile=outTfm,
-                intplMode='Linear')
+                # Use nearest neighbour for in_dce_gd
+                intplMode='NearestNeighbor' if eachPk=='in_dce_gd' else 'Linear')
         )
 
     update(self, key, output)
@@ -626,7 +628,16 @@ def step2_5(self):
 
     params = (self.cmtk_path, self.cmtk_folder, *filesCopy)
     genCmtkScript(os.path.join(self.cmtk_folder, 'warp.sh'), params)
-    cmd = '"%s" "%s"' % (self.bash_path, os.path.join(self.cmtk_folder, 'warp.sh'))
+    warpFile = os.path.join(self.cmtk_folder, 'warp.sh')
+
+    # Locate the warp.sh in case the user needs to change it
+    Popen(f'explorer.exe /select, "{os.path.realpath(warpFile)}"')
+    try:
+        input("Modify the warp.sh scrip if necessary.\nPress ENTER to continue: ")
+    except:
+        pass
+    
+    cmd = '"%s" "%s"' % (self.bash_path, warpFile )
     runCmd(cmd)
 
     # Add the output to the filelist
@@ -678,6 +689,11 @@ def step2_6(self):
         refImgL = os.path.join(self.nii_folder, 'ex_3d_cropped.nii')
         outImgL = os.path.join(self.nii_folder, files[eachF])
         tfmFileL = os.path.join(self.tfm_folder, '(in_3d)_to_(ex_xd).tfm')
+        
+        # Use nearest neighbour for in_3d_contour
+        nearestNFiles = ['in_3d_contour.nii', '(in_dce_gd)_to_(in_3d).nii']
+        intplMode = 'NearestNeighbor' if eachF in nearestNFiles else 'Linear'
+
         # Rigid resampling
         output.update(
             warpImg(inImg=inImgL,
@@ -685,7 +701,7 @@ def step2_6(self):
                     outImg=outImgL,
                     pixelT='float',
                     tfmFile=tfmFileL,
-                    intplMode='Linear',
+                    intplMode=intplMode,
                     labelMap=False)
         )
 
@@ -699,6 +715,7 @@ def step2_6(self):
                                f"warp_{eachF.split('.')[0]}_{int(time.time())}.sh")
         output.update(
             deformWarp(cmtkPath=self.cmtk_path,
+                    intplMode='--nn' if eachF in nearestNFiles else '--linear',
                     inImg=inImgD,
                     refImg=refImgD,
                     outImg=outImgD,

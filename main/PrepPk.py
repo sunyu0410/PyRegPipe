@@ -120,7 +120,8 @@ class PrepPkWidget:
 
     def findFolder(self):
         fl = {i:None for i in self.filesCvt}
-        prjFolder = self.textareas['vPrj'].toPlainText().strip().split()
+        prjFolder = self.textareas['vPrj'].toPlainText().strip().split('\n')
+        print(prjFolder)
         assert len(prjFolder) == 1
         for eachF in self.filesCvt:
             keywords = eachF.split('_')
@@ -132,6 +133,7 @@ class PrepPkWidget:
             if final:
                 fl[eachF] = list(final)[0]
         self.textareas['vFndF'].setText(pformat(fl, width=60))
+        print(fl)
 
     def mvFolder(self):        
         # File list

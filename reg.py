@@ -490,11 +490,18 @@ def flipFile(inFile, outFile, mode):
     slicer.mrmlScene.RemoveNode(node)
     return state
 
-def deformWarp(cmtkPath, inImg, refImg, outImg, xform, scrPath, bashPath):
+def deformWarp(cmtkPath, intplMode, inImg, refImg, outImg, xform, scrPath, bashPath, nn=False):
     """Warp an image using the transform from CMTK.
     
     Arguments:
         cmtkPath {str} -- path of the CMTK
+        intplMode {str} -- interplolation mode
+                            --linear: Trilinear interpolation [This is the default]
+                            --nn: Nearest neighbor interpolation
+                            --cubic: Tricubic interpolation
+                            --pv: Partial volume interpolation
+                            --sinc-cosine: Sinc interpolation with cosine window
+                            --sinc-hamming: Sinc interpolation with Hamming window
         inImg {str} -- path of the input image
         refImg {str} -- path of the reference image
         outImg {str} -- path of the output image
@@ -502,10 +509,11 @@ def deformWarp(cmtkPath, inImg, refImg, outImg, xform, scrPath, bashPath):
         scrPath {str} -- path of the folder to generate the script
         bashPath {str} -- path of the bash shell
     """
-    tmpl = 'export CMTK_WRITE_UNCOMPRESSED=1\n"{}" -o "{}" --floating "{}" "{}" "{}"'
+    tmpl = 'export CMTK_WRITE_UNCOMPRESSED=1\n"{}" {} -o "{}" --floating "{}" "{}" "{}"'
 
     with open(scrPath, 'w') as f:
         content = tmpl.format(os.path.realpath(os.path.join(cmtkPath, 'reformatx')), 
+                              intplMode,
                               os.path.realpath(outImg), 
                               os.path.realpath(inImg),
                               os.path.realpath(refImg), 
