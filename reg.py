@@ -490,7 +490,7 @@ def flipFile(inFile, outFile, mode):
     slicer.mrmlScene.RemoveNode(node)
     return state
 
-def deformWarp(cmtkPath, intplMode, inImg, refImg, outImg, xform, scrPath, bashPath, nn=False):
+def deformWarp(cmtkPath, intplMode, inImg, refImg, outImg, xform, scrPath, bashPath):
     """Warp an image using the transform from CMTK.
     
     Arguments:

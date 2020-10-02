@@ -210,7 +210,7 @@ class WarpImgWidget:
             xform = cmtkTfmDir
             srcPath = os.path.join(outDirS, f"warp_{eachF.split('.')[0]}.sh")
             print(f'Warp deform: {eachF}')
-            deformWarp(cmtkPath=self.cmtkPath, inImg=inImgD, refImg=refImgD, outImg=outImgD,
+            deformWarp(cmtkPath=self.cmtkPath, intplMode='', inImg=inImgD, refImg=refImgD, outImg=outImgD,
                        xform=xform, scrPath=srcPath, bashPath=self.bashPath)
             
 
