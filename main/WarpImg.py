@@ -69,6 +69,8 @@ class WarpImgWidget:
             'in_ktrans_weinmann.nii', 'in_ktrans_parker.nii', 'in_ve_left_femoral.nii', 
             'in_ve_right_femoral.nii', 'in_ve_weinmann.nii', 'in_ve_parker.nii', 
             'in_iaugc60.nii']
+        
+        self.nn = ['in_dce_gd.nii']
 
         self.filesAssc = ['(in_twist*)_to_(in_3d).tfm', 
                             '(in_3d)_to_(ex_xd).tfm', 'in_3d.nii', 
@@ -178,6 +180,9 @@ class WarpImgWidget:
         assert os.path.exists(cmtkTfmDir)
 
         for eachF in flWarp:
+            # Get the flag for using Nearest Neighbour
+            eachUseNN = eachF in self.nn
+
             # Rigid resampling
             # to_(in_3d)
             inImgT = flWarp[eachF]
@@ -188,8 +193,16 @@ class WarpImgWidget:
             outFnameT = f"({eachF.split('.nii')[0]})_to_(in_3d).nii"
             outImgT = os.path.join(outDirT, outFnameT)
             tfmFileT = flAssc['(in_twist*)_to_(in_3d).tfm']
-            warpImg(inImg=inImgT,  refImg=refImgT, outImg=outImgT, pixelT='float',
-                    tfmFile=tfmFileT, intplMode='Linear', labelMap=False)
+            if eachUseNN:
+                # Use NearestNeighbor for files in self.nn
+                #  e.g. in_dce_gd.nii
+                warpImg(inImg=inImgT,  refImg=refImgT, outImg=outImgT, 
+                        pixelT='float', tfmFile=tfmFileT, intplMode='NearestNeighbor', 
+                        labelMap=False)
+            else:
+                warpImg(inImg=inImgT,  refImg=refImgT, outImg=outImgT, 
+                        pixelT='float', tfmFile=tfmFileT, intplMode='Linear', 
+                        labelMap=False)
 
             # into_(ex_3d_cropped)
             inImgL = outImgT
@@ -198,8 +211,14 @@ class WarpImgWidget:
             outImgL = os.path.join(outDirL, outFnameL)
             tfmFileL = flAssc['(in_3d)_to_(ex_xd).tfm']
             print(f'Warp linear: {eachF}')
-            warpImg(inImg=inImgL,  refImg=refImgL, outImg=outImgL, pixelT='float',
-                    tfmFile=tfmFileL, intplMode='Linear', labelMap=False)
+            if eachUseNN:
+                warpImg(inImg=inImgL,  refImg=refImgL, outImg=outImgL, 
+                        pixelT='float', tfmFile=tfmFileL, intplMode='NearestNeighbor', 
+                        labelMap=False)
+            else:
+                warpImg(inImg=inImgL,  refImg=refImgL, outImg=outImgL, 
+                        pixelT='float', tfmFile=tfmFileL, intplMode='Linear', 
+                        labelMap=False)
 
             # Deformable resampling
             # deformWarp(cmtkPath, inImg, refImg, outImg, xform, scrPath, bashPath)
@@ -210,8 +229,14 @@ class WarpImgWidget:
             xform = cmtkTfmDir
             srcPath = os.path.join(outDirS, f"warp_{eachF.split('.')[0]}.sh")
             print(f'Warp deform: {eachF}')
-            deformWarp(cmtkPath=self.cmtkPath, intplMode='', inImg=inImgD, refImg=refImgD, outImg=outImgD,
-                       xform=xform, scrPath=srcPath, bashPath=self.bashPath)
+            if eachUseNN:
+                deformWarp(cmtkPath=self.cmtkPath, intplMode='--nn', inImg=inImgD, 
+                           refImg=refImgD, outImg=outImgD, xform=xform, 
+                           scrPath=srcPath, bashPath=self.bashPath)
+            else:
+                deformWarp(cmtkPath=self.cmtkPath, intplMode='', inImg=inImgD, 
+                           refImg=refImgD, outImg=outImgD, xform=xform, 
+                           scrPath=srcPath, bashPath=self.bashPath)
             
 
     def clear(self):
