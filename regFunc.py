@@ -135,7 +135,7 @@ def step1_3(self):
         
         self.bold_echo2_folder = os.path.join(self.sort_bold_folder, '9.84')
         output = self.mergeDict(
-            # Conver the second echo time (9.84 ms) to .nii
+            # Convert the second echo time (9.84 ms) to .nii
             cvtITK(self.bold_echo2_folder, self.nii_folder, 'in_bold_echo2.nii')
         )
 
