@@ -219,7 +219,7 @@ def genR2Star(macro_path, exe_path='imagej'):
     macro_path: the path for the macro.
                 e.g. F:\Registration\registration\compare\imj\test.imj
     '''
-    cmd = '%s -macro %s' % (os.path.normpath(exe_path), 
+    cmd = '"%s" -macro "%s"' % (os.path.normpath(exe_path), 
                             os.path.normpath(macro_path))
     p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
     return p.communicate()
