@@ -206,7 +206,7 @@ class PyRegPipeWidget:
 
         modeDict = {
             'Anterior - Posterior': 'ap', 
-            'Superior - Interior': 'si', 
+            'Superior - Inferior': 'si', 
             'Left - Right': 'lr'
         }
 
