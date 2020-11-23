@@ -42,7 +42,7 @@ corrt_slice =  {'mrhist005': '10',
                 'mrhist047': '14',   # A value must be set before use. 14 was first chosen - introduced movement between 9-11 frames; correction result using frame 16 was worse - may be better off not using motion correction 
                 'mrhist048': '15', # same problem as 047, "corrected" one was worse; 3D motion correction on 15 worked better
                 'mrhist049': '14', #
-            #   'mrhist050': '17', # very bad motion, see if 3D is better, but otherwise may need to find another method
+                'mrhist050': '17', # very bad motion, see if 3D is better, but otherwise may need to find another method
                 'mrhist051': '16', #
                 'mrhist052': '21', #
                 'mrhist053': '16', # (3D)
