@@ -86,11 +86,14 @@ def step1_2(self):
 
     outTfm = os.path.join(self.tfm_folder, '(in_dwi_b50)_to_(in_3d).tfm')
     if not path.exists(outTfm):
-        # Rigid registration to in_3d
-        rigidReg(fixedImg=os.path.join(self.nii_folder, 'in_3d.nii'),
-                movingImg=os.path.join(self.nii_folder, 'in_dwi_b50.nii'),
-                outImg=None,
-                outTfm=outTfm)
+        output.update(
+            # Rigid registration to in_3d
+            rigidReg(fixedImg=os.path.join(self.nii_folder, 'in_3d.nii'),
+                    movingImg=os.path.join(self.nii_folder, 'in_dwi_b50.nii'),
+                    outImg=None,
+                    outTfm=outTfm)
+        )
+        
     else:
         print(f'Using existing transformation:\n\t{outTfm}')
                 
@@ -141,11 +144,14 @@ def step1_3(self):
 
         outTfm = os.path.join(self.tfm_folder, '(in_bold_echo2)_to_(in_3d).tfm')
         if not path.exists(outTfm):
-            # Co-register to in_3d
-            rigidReg(fixedImg=os.path.join(self.nii_folder, 'in_3d.nii'),
-                    movingImg=os.path.join(self.nii_folder, 'in_bold_echo2.nii'),
-                    outImg=None,
-                    outTfm=outTfm) 
+            output.update(
+                # Co-register to in_3d
+                rigidReg(fixedImg=os.path.join(self.nii_folder, 'in_3d.nii'),
+                        movingImg=os.path.join(self.nii_folder, 'in_bold_echo2.nii'),
+                        outImg=None,
+                        outTfm=outTfm) 
+            )
+            
         else:
             print(f'Using existing transformation:\n\t{outTfm}')
 
@@ -226,10 +232,13 @@ def step1_4(self):
 
     outTfm = os.path.join(self.tfm_folder, '(in_twist#)_to_(in_3d).tfm')
     if not path.exists(outTfm):
-        rigidReg(fixedImg=os.path.join(self.nii_folder, 'in_3d.nii'),
-                movingImg=os.path.join(self.nii_folder, self.t1_nii_filename),
-                outImg=None,
-                outTfm=outTfm)
+        output.update(
+            rigidReg(fixedImg=os.path.join(self.nii_folder, 'in_3d.nii'),
+                    movingImg=os.path.join(self.nii_folder, self.t1_nii_filename),
+                    outImg=None,
+                    outTfm=outTfm)
+        )
+        
     else:
         print(f'Using existing transformation:\n\t{outTfm}')
     
