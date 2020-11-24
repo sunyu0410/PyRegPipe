@@ -165,42 +165,48 @@ def step1_3(self):
                     intplMode='Linear')
         )
 
-        # Generate R2* map
-        self.temp_r2star_folder = os.path.join(self.temp_folder, 'R2STAR')
-        if path.exists(self.temp_r2star_folder):
-            shutil.rmtree(self.temp_r2star_folder)
-        shutil.copytree(self.bold_dcm_folder, self.temp_r2star_folder)   
-        # Initialise a parameter set
-        r2starParams = {
-            'reverse': True,
-            'vflip': False,
-            'echoTypo': False
-        }
-        macroFilename = 'r2star.imj'
-        self.r2starScriptPath = os.path.join(self.script_folder, macroFilename)
-        # print(self.r2starScriptPath)
-        # Create the ImageJ macro
-        genR2StarMacro.genR2StarMacro(
-            self.r2starScriptPath,
-            reverse=r2starParams['reverse'],
-            vflip=r2starParams['vflip'],
-            echoTypo=r2starParams['echoTypo']
-        )
-        # Run the macro
-        genR2Star(self.r2starScriptPath, self.imagej_path)
-        # Move the files to the corresponding folders
-        shutil.move(os.path.join(self.temp_r2star_folder, 'in_r2star.nii'), 
-                    os.path.join(self.nii_folder, 'in_r2star.nii'))
-        output.update(
-            {os.path.join(self.nii_folder, 'in_r2star.nii'): True}
-        )
-        
-        os.remove(os.path.join(self.temp_r2star_folder, 'in_t2star.tif'))
-        # Copy the header information
-        copyHeader(os.path.join(self.nii_folder, 'in_r2star.nii'),
-                    os.path.join(self.nii_folder, 'in_bold_echo2.nii'),
-                    self.nii_folder,
-                    self.temp_folder)
+        # R2* map
+        r2star_path = os.path.join(self.nii_folder, 'in_r2star.nii')
+        if os.path.exists(r2star_path):
+            # If R2* map not existed
+            print('Using existing R2* map:', r2star_path)
+        else:
+            # Generate R2* map
+            self.temp_r2star_folder = os.path.join(self.temp_folder, 'R2STAR')
+            if path.exists(self.temp_r2star_folder):
+                shutil.rmtree(self.temp_r2star_folder)
+            shutil.copytree(self.bold_dcm_folder, self.temp_r2star_folder)   
+            # Initialise a parameter set
+            r2starParams = {
+                'reverse': True,
+                'vflip': False,
+                'echoTypo': False
+            }
+            macroFilename = 'r2star.imj'
+            self.r2starScriptPath = os.path.join(self.script_folder, macroFilename)
+            # print(self.r2starScriptPath)
+            # Create the ImageJ macro
+            genR2StarMacro.genR2StarMacro(
+                self.r2starScriptPath,
+                reverse=r2starParams['reverse'],
+                vflip=r2starParams['vflip'],
+                echoTypo=r2starParams['echoTypo']
+            )
+            # Run the macro
+            genR2Star(self.r2starScriptPath, self.imagej_path)
+            # Move the files to the corresponding folders
+            shutil.move(os.path.join(self.temp_r2star_folder, 'in_r2star.nii'), 
+                        os.path.join(self.nii_folder, 'in_r2star.nii'))
+            output.update(
+                {os.path.join(self.nii_folder, 'in_r2star.nii'): True}
+            )
+            
+            os.remove(os.path.join(self.temp_r2star_folder, 'in_t2star.tif'))
+            # Copy the header information
+            copyHeader(os.path.join(self.nii_folder, 'in_r2star.nii'),
+                        os.path.join(self.nii_folder, 'in_bold_echo2.nii'),
+                        self.nii_folder,
+                        self.temp_folder)
 
         output.update(
             # Resampling to get the 'to' file
