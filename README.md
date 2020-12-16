@@ -2,7 +2,7 @@
 
 The automatic registration framework using Python for 3D Slicer, developed for the BiRT project.
 
-Developed and maintained by [Yu Sun](mailto:yu.sun@sydney.edu.au). No Python objectas are harmed during the development phase.
+Developed and maintained by [Yu Sun](mailto:yu.sun@sydney.edu.au). No Python objects are harmed during the development phase.
 
 
 ![design.PNG](./img/design.png)
