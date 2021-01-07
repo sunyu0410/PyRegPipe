@@ -43,6 +43,11 @@ class PyRegPipeWidget:
         if not parent:
             self.setup()
             self.parent.show()
+
+    @staticmethod
+    def path(*parts):
+        """Joins and returns the real path given the path components."""
+        return os.path.realpath(os.path.join(*parts))
             
     def setup(self):
         # clpStart
@@ -229,14 +234,64 @@ class PyRegPipeWidget:
         self.createBtn("Flip", apply, layout)
         return win
 
+    def subParDir(self, path, oldParDir, newParDir):
+        '''Subtitute the parent directory from the oldParDir to
+        newParDir on path'''
+        try:
+            relPath = os.path.relpath(path, oldParDir)
+        except:
+            print("Error substuting parent directory")
+            print(path, oldParDir, newParDir)
+            return None
+        newPath = os.path.realpath(os.path.join(newParDir, relPath))
+        return newPath
+
     def loadSetting(self):
-        ''''''
+        '''Will update the prjPath based on the opened session'''
+        print(f"Loading settings: {self.path(self.setting_path)}")
         with open(self.setting_path, 'rb') as f:
-            (self.prjPath, self.patient_number, self.outputs, 
-             self.completed, self.volumes, self.transfms,
-             self.inFilePanel, self.note) = pickle.load(f)
-        self.textNote.setText(self.textNote.toPlainText() + self.note)
+            (oldPrjPath, patient_number, outputs, completed, volumes,
+                transfms, inFilePanel, note) = pickle.load(f)
         
+        # self.prjPath will be unchanged
+        print(f"Current project folder: {self.prjPath}")
+
+        # self.patient_number
+        self.patient_number = patient_number
+        
+        # self.outputs
+        newOutputs = {}
+        for key in outputs:
+            item = {}
+            for f in outputs[key]:
+                newF = self.subParDir(f, oldPrjPath, self.prjPath)
+                item[newF] = outputs[key][f]
+            newOutputs[key] = item
+        self.outputs = newOutputs
+        
+        # self.completed 
+        self.completed = completed
+
+        # self.volumes
+        newVolumes = {}
+        for key in volumes:
+            newVolumes[key] = self.subParDir(volumes[key], oldPrjPath, self.prjPath)
+        self.volumes = newVolumes
+        
+        # self.transfms
+        newTransfms = {}
+        for key in transfms:
+            newTransfms[key] = self.subParDir(transfms[key], oldPrjPath, self.prjPath)
+        self.transfms = newTransfms
+
+        # self.inFilePanel
+        self.inFilePanel = inFilePanel
+
+        # self.notes
+        self.note = note
+        
+        self.textNote.setText(self.textNote.toPlainText() + self.note)
+    
     def refreshStatus(self):
         for key in self.completed:
             self.setStatus(key, 1 if self.completed[key] else 0)
