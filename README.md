@@ -23,8 +23,18 @@ There are currently four modules (under the `main` folder):
 * `ToNIfTI.py`: a module for converting DYNAMIKA DICOM to NIfTI files
 * `PrepPk.py`: a module for preparing the folders for DYNAMIKA pharmacokinetic maps.
 * `WarpImg.py`: (for heritage files) a module for warping images from the *in vivo* space into the *ex vivo* space, given the exisitng CMTK transformation folder.
+* `WarpCnt.py`: warp contours to the ex vivo space.
+* `GenSceneFile.py`: generate the Slicer scene file after the registration finishes.
 
 `PyRegPipe` is based on Python automation on 3D Slicer functions. The following text describes the background and the utilities which can be used elsewhere.
+
+
+## Workflow
+The `PyRegPipe` automates two parts:
+* Conversion of *in vivo* data;
+* Registration between *in vivo* and *ex vivo* data. This involves multiple steps which is shown in the diagram below.
+
+![design.PNG](./img/reg_diagram.png)
 
 ## Quick start
 
