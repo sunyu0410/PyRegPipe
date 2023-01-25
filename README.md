@@ -110,7 +110,7 @@ In addition to `qt`, the Common Toolkit (`ctk`) provides some extra widgets you 
 When you launch Slicer, you'll find a module called `slicer`. This is the main module you need to access the functionality of Slicer. The `util` sub-module contains the commonly used routines such as loading and saving data. The nodes (mentioned in the previous section) can be found in `slicer`, e.g. `slicer.vtkMRMLScalarVolumeNode` and `slicer.vtkMRMLTransformNode`.
 
 ### In a nutshell
-The Python interface in Slicer offers a wide range of tools to automate tasks and create customised scripted modules. The current preview release (v4.11.0) ships with Python 3 which is the current standard. With `slicer`, `SimpleITK`, 'vtk`, `qt`, `ctk` and other third-party libraries (e.g. 'Elastix'), this is probably the best environment one can find for medical image processing.
+The Python interface in Slicer offers a wide range of tools to automate tasks and create customised scripted modules. The current preview release (v4.11.0) ships with Python 3 which is the current standard. With `slicer`, `SimpleITK`, `vtk`, `qt`, `ctk` and other third-party libraries (e.g. 'Elastix'), this is probably the best environment one can find for medical image processing.
 
 Next we will look at some examples.
 
